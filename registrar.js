@@ -85,6 +85,7 @@ function registrar(tipo) {
 
     window.location.replace('index.html');
   })
-  .catch(() => alert('Error de conexión'));
+  .catch(() => alert('Error de conexión')); 
 }
+
 
