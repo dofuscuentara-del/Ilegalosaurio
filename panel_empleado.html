@@ -96,8 +96,17 @@
     hidden
   >
 
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations()
+    .then(regs => regs.forEach(r => r.unregister()));
+}
+</script>
+
+  
   <script src="panel_empleado.js"></script>
 </body>
 </html>
+
 
 
