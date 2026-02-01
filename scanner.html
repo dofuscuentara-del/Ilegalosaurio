@@ -5,7 +5,6 @@
   <title>Escanear QR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- CSS -->
   <link rel="stylesheet" href="scanner.css" />
 </head>
 <body>
@@ -14,40 +13,27 @@
 
     <h1 class="title">Escanear Código QR</h1>
 
-    <!-- CONTENEDOR QR (OBLIGATORIO) -->
+    <!-- CONTENEDOR QR -->
     <div class="camera-box">
       <div id="qr-reader"></div>
     </div>
 
-    <!-- Botones -->
-    <button class="btn btn-camera" id="btnCamara">
-      Usar cámara
-    </button>
-
-    <button class="btn btn-galeria" id="btnGaleria">
-      Leer desde foto
-    </button>
-
-    <button class="btn btn-cancelar" id="btnCancelar">
-      Cancelar
-    </button>
+    <button class="btn btn-camera" id="btnCamara">Usar cámara</button>
+    <button class="btn btn-galeria" id="btnGaleria">Leer desde foto</button>
+    <button class="btn btn-cancelar" id="btnCancelar">Cancelar</button>
 
   </main>
 
-  <!-- MOTOR QR -->
+  <!-- Html5 QR -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations()
-    .then(regs => regs.forEach(r => r.unregister()));
-}
-</script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then(regs => regs.forEach(r => r.unregister()));
+  }
+  </script>
 
-  
-  <!-- TU JS -->
   <script src="scanner.js"></script>
-
 </body>
 </html>
-
