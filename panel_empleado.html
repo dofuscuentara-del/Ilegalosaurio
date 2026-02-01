@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel del Empleado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="panel_empleado.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <!-- =====================
+         HEADER
+    ====================== -->
+    <header class="header">
+      <img src="DinoHD4KFondo1.png" class="logo" />
+
+      <div class="perfil">
+        <img src="perfil.png" id="fotoPerfil" />
+        <button id="btnCambiarFoto">Cambiar foto</button>
+      </div>
+    </header>
+
+    <!-- =====================
+         ESTADO ACTUAL
+    ====================== -->
+    <section class="estado">
+      <h2 id="estadoActual">Estado: —</h2>
+      <p id="horasHoy">Horas hoy: 0</p>
+    </section>
+
+    <!-- =====================
+         ACCIONES
+    ====================== -->
+    <section class="acciones">
+      <button class="btn btn-entrada" id="btnEntrada">ENTRADA</button>
+      <button class="btn btn-salida" id="btnSalida">SALIDA</button>
+      <button class="btn btn-calculadora" id="btnCalculadora">
+        CALCULADORA
+      </button>
+    </section>
+
+    <!-- =====================
+         HISTORIAL
+    ====================== -->
+    <section class="historial">
+      <h3>Últimos 15 días</h3>
+      <ul id="listaDias">
+        <!-- dinámico -->
+      </ul>
+    </section>
+
+    <!-- =====================
+         SALIR
+    ====================== -->
+    <button class="btn btn-salir" id="btnSalir">
+      Salir
+    </button>
+
+  </main>
+
+  <!-- =========================
+       MODAL CALCULADORA PRO
+  ========================== -->
+  <div id="modalCalculadora" class="modal" style="display:none;">
+    <div class="modal-content">
+
+      <h3>Calcular horas</h3>
+
+      <label>Desde</label>
+      <input type="date" id="fechaInicio">
+
+      <label>Hasta</label>
+      <input type="date" id="fechaFin">
+
+      <label>Sueldo por hora</label>
+      <input type="number" id="sueldoHora" placeholder="Ej. 15">
+
+      <p id="resultadoCalc">
+        Horas: 0 | Total: $0
+      </p>
+
+      <button id="btnCalcular">Calcular</button>
+      <button id="btnCerrarCalc">Cerrar</button>
+
+    </div>
+  </div>
+
+  <!-- Input oculto para cambiar foto -->
+  <input
+    type="file"
+    id="inputFoto"
+    accept="image/*"
+    hidden
+  >
+
+  <script src="panel_empleado.js"></script>
+</body>
+</html>
+
+

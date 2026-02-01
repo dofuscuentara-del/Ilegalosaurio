@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Administrador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="panel_admin.css" />
+</head>
+<body>
+
+<main class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <img src="DinoHD4KFondo1.png" class="logo" />
+    <div class="perfil">
+      <img src="perfil.png" id="fotoAdmin" />
+      <button id="btnCambiarFotoAdmin">Cambiar foto</button>
+    </div>
+  </header>
+
+  <!-- RESUMEN -->
+  <section class="resumen">
+    <div class="card">
+      <h3 id="empleadosActivos">0</h3>
+      <p>Activos ahora</p>
+    </div>
+    <div class="card">
+      <h3 id="totalEmpleados">0</h3>
+      <p>Total empleados</p>
+    </div>
+  </section>
+
+  <!-- ACCIONES -->
+  <section class="acciones-admin">
+    <button class="btn" id="btnNuevoEmpleado">➕ Nuevo empleado</button>
+    <button class="btn" id="btnEditarHoras">✏️ Editar horarios</button>
+    <button class="btn" id="btnVerRegistros">📄 Ver registros</button>
+    <button class="btn" id="btnCorrecciones">🛠 Correcciones</button>
+    <button class="btn" id="btnExportar">📤 Exportar</button>
+    <button class="btn" id="btnGestionQR">🔐 Gestionar QR</button>
+  </section>
+
+  <!-- LISTA -->
+  <section class="lista">
+    <h3>Empleados</h3>
+    <ul id="listaEmpleados"></ul>
+  </section>
+
+  <button class="btn btn-salir" id="btnSalirAdmin">Salir</button>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<script src="panel_admin.js"></script>
+
+</body>
+</html>

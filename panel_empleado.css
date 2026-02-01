@@ -1,0 +1,178 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: #f6f8fb;
+  color: #1f2937;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 16px;
+}
+
+/* =====================
+   HEADER
+===================== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  height: 100px;
+}
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#fotoPerfil {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+#btnCambiarFoto {
+  font-size: 12px;
+  padding: 6px 8px;
+  border: none;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+/* =====================
+   ESTADO
+===================== */
+.estado {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.estado h2 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.estado p {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* =====================
+   ACCIONES
+===================== */
+.acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-entrada {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-salida {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-calculadora {
+  grid-column: span 2;
+  background: #3b82f6;
+  color: white;
+}
+
+/* =====================
+   HISTORIAL
+===================== */
+.historial {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.historial h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+#listaDias {
+  list-style: none;
+}
+
+#listaDias li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+/* =====================
+   SALIR
+===================== */
+.btn-salir {
+  width: 100%;
+  background: #9ca3af;
+  color: white;
+}
+
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 320px;
+}
+
+.modal-content input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+.modal-content button {
+  width: 100%;
+  margin-top: 8px;
+}

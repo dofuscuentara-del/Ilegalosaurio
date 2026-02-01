@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Control de Asistencia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
+
+  <!-- CSS separado -->
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <!-- Logo -->
+    <img src="DinoHD4KFondo1.png" alt="Logo" class="logo" />
+
+    <!-- Botón escanear QR -->
+    <button class="btn btn-qr" id="btnEscanear">
+      Escanear QR
+    </button>
+
+    <!-- Botón entrar al panel -->
+    <button class="btn btn-panel" id="btnPanel">
+      Entrar a mi panel
+    </button>
+
+  </main>
+
+  <script src="index.js"></script>
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('Service Worker registrado'))
+      .catch(err => console.error('SW error', err));
+  }
+</script>
+
+
+</body>
+</html>

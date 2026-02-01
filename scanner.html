@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Escanear QR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="scanner.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <h1 class="title">Escanear Código QR</h1>
+
+    <!-- CONTENEDOR QR (OBLIGATORIO) -->
+    <div class="camera-box">
+      <div id="qr-reader"></div>
+    </div>
+
+    <!-- Botones -->
+    <button class="btn btn-camera" id="btnCamara">
+      Usar cámara
+    </button>
+
+    <button class="btn btn-galeria" id="btnGaleria">
+      Leer desde foto
+    </button>
+
+    <button class="btn btn-cancelar" id="btnCancelar">
+      Cancelar
+    </button>
+
+  </main>
+
+  <!-- MOTOR QR -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <!-- TU JS -->
+  <script src="scanner.js"></script>
+
+</body>
+</html>

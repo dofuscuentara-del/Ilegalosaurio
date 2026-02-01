@@ -1,0 +1,62 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f5f7fb;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor principal */
+.container {
+  width: 100%;
+  max-width: 360px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Logo */
+.logo {
+  width: 250px;
+  margin: 40px auto 50px auto;
+  display: block;
+}
+
+/* Botones base */
+.btn {
+  width: 100%;
+  padding: 18px;
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* Botón QR */
+.btn-qr {
+  background-color: #2ecc71;
+  color: #ffffff;
+}
+
+.btn-qr:active {
+  background-color: #27ae60;
+}
+
+/* Botón panel */
+.btn-panel {
+  background-color: #3498db;
+  color: #ffffff;
+}
+
+.btn-panel:active {
+  background-color: #2c80b4;
+}
