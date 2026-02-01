@@ -44,7 +44,7 @@ body {
 
 .camera-box video {
   width: 100%;
-  height: 100%;
+  height: 400px;
   object-fit: cover;
 }
 
@@ -89,3 +89,4 @@ body {
 .btn-cancelar:active {
   background-color: #c0392b;
 }
+
