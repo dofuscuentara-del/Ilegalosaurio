@@ -50,30 +50,27 @@ async function usarCamara() {
 
 // LEER DESDE GALERÍA
 async function usarGaleria() {
-  if (!qrScanner) {
-    qrScanner = new Html5Qrcode("qr-reader");
-  }
-
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
 
-  input.onchange = async e => {
+  input.onchange = e => {
     if (!e.target.files.length) return;
+    const file = e.target.files[0];
 
-    try {
-      const file = e.target.files[0];
-
-      // Aseguramos que sea un Blob
-      const blob = file instanceof Blob ? file : new Blob([file]);
-
-      const qrData = await qrScanner.scanFile(blob, true);
-      procesarQR(qrData);
-
-    } catch (err) {
-      alert("No se detectó ningún QR en la imagen");
-      console.error(err);
-    }
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+      const dataUrl = event.target.result;
+      try {
+        if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
+        const qrData = await qrScanner.scanFile(dataUrl, true);
+        procesarQR(qrData);
+      } catch(err) {
+        alert("No se detectó ningún QR en la imagen");
+        console.error(err);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   input.click();
@@ -138,3 +135,4 @@ document.getElementById("btnCancelar").addEventListener('click', async () => {
   await detenerScanner();
   location.href = 'index.html';
 });
+
