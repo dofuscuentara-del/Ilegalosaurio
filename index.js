@@ -1,12 +1,17 @@
 // index.js
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btnEscanear').onclick = () => {
-    localStorage.setItem('scanner_modo', 'asistencia');
-    location.href = 'scanner.html';
-  };
+  const btnEscanear = document.getElementById('btnEscanear');
+  const btnPanel = document.getElementById('btnPanel');
 
-  document.getElementById('btnPanel').onclick = () => {
+  btnEscanear.addEventListener('click', () => {
+    // modo asistencia
+    localStorage.setItem('scanner_modo', 'asistencia');
+    window.location.href = 'scanner.html';
+  });
+
+  btnPanel.addEventListener('click', () => {
+    // modo login
     localStorage.setItem('scanner_modo', 'login');
-    location.href = 'scanner.html';
-  };
+    window.location.href = 'scanner.html';
+  });
 });
