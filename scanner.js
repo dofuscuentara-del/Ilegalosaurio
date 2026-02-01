@@ -5,14 +5,14 @@ if(!SCANNER_MODO) location.replace('index.html');
 let qrScanner = new Html5Qrcode("qr-reader");
 let scanning = false;
 
-// Función para procesar QR
-function procesarQR(qrData){
-  fetch(API_URL,{
-    method:"POST",
-    body: JSON.stringify({action:"validarQR",qr_id:qrData})
-  })
-  .then(r=>r.json())
-  .then(data=>{
+// PROCESAR QR
+async function procesarQR(qrData){
+  try{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      body: JSON.stringify({action:"validarQR",qr_id:qrData})
+    });
+    const data = await res.json();
     if(!data.ok){alert("QR no válido"); return;}
     localStorage.setItem("empleado_id",data.empleado_id);
     localStorage.setItem("rol",data.rol);
@@ -23,27 +23,35 @@ function procesarQR(qrData){
       if(data.rol==="admin") location.replace("panel_admin.html");
       else location.replace("panel_empleado.html");
     }
-  })
-  .catch(err=>{console.error(err);alert("Error de conexión con el servidor");});
+  }catch(err){
+    console.error(err);
+    alert("Error de conexión con el servidor");
+  }
 }
 
-// Función para iniciar cámara automáticamente
-async function iniciarCamara(){
+// INICIAR ESCANEO CONTINUO
+async function usarCamara(){
   if(scanning) return;
   scanning = true;
   try{
     await qrScanner.start(
       {facingMode:"environment"},
-      {fps:10,qrbox:250},
-      qrData=>{detenerScanner();procesarQR(qrData);}
+      {
+        fps:10,
+        qrbox:250,
+        experimentalFeatures:{useBarCodeDetectorIfSupported:true}
+      },
+      qrData=>{detenerScanner(); procesarQR(qrData);},
+      err=>{}
     );
   }catch(err){
-    console.warn("No se pudo abrir cámara:",err);
-    scanning = false;
+    scanning=false;
+    alert("No se pudo abrir la cámara. Usar 'Leer desde foto'");
+    console.error(err);
   }
 }
 
-// Función para leer galería
+// LEER GALERÍA con canvas
 function usarGaleria(){
   const input=document.createElement("input");
   input.type="file"; input.accept="image/*";
@@ -53,25 +61,34 @@ function usarGaleria(){
     const reader=new FileReader();
     reader.onload=async ev=>{
       try{
-        const qrData=await qrScanner.scanFile(ev.target.result,true);
+        // forzar lectura con canvas
+        const qrData = await qrScanner.scanFile(ev.target.result, true);
         procesarQR(qrData);
-      }catch(err){alert("No se detectó QR en la imagen");console.error(err);}
+      }catch(err){
+        alert("No se detectó ningún QR en la imagen");
+        console.error(err);
+      }
     };
     reader.readAsDataURL(file);
   };
   input.click();
 }
 
-// Detener scanner
+// DETENER SCANNER
 async function detenerScanner(){
-  if(scanning){try{await qrScanner.stop(); await qrScanner.clear();}catch{}}
+  if(scanning){
+    try{await qrScanner.stop(); await qrScanner.clear();}catch{}
+  }
   scanning=false;
 }
 
-// Eventos
-document.getElementById("btnCamara").addEventListener("click",iniciarCamara);
+// EVENTOS
+document.getElementById("btnCamara").addEventListener("click",usarCamara);
 document.getElementById("btnGaleria").addEventListener("click",usarGaleria);
-document.getElementById("btnCancelar").addEventListener("click",async()=>{await detenerScanner(); location.href='index.html';});
+document.getElementById("btnCancelar").addEventListener("click",async()=>{
+  await detenerScanner(); location.href='index.html';
+});
 
-// Auto iniciar cámara al cargar
-window.addEventListener("load",()=>{iniciarCamara();});
+// AUTO iniciar cámara al cargar
+window.addEventListener("load",()=>{usarCamara();});
+
