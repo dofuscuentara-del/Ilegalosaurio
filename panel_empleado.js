@@ -220,4 +220,5 @@ function renderHistorial(dias) {
     li.innerHTML = `<span>${d.fecha}</span><span>${d.horas} h</span>`;
     listaDiasEl.appendChild(li);
   });
-}
+} 
+
