@@ -1,39 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Escanear QR</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="stylesheet" href="scanner.css" />
+<meta charset="UTF-8">
+<title>Escanear QR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="scanner.css">
 </head>
 <body>
 
-  <main class="container">
+<main class="container">
+  <h1 class="title">Escanear Código QR</h1>
 
-    <h1 class="title">Escanear Código QR</h1>
+  <div class="camera-box">
+    <div id="qr-reader"></div>
+  </div>
 
-    <!-- CONTENEDOR QR -->
-    <div class="camera-box">
-      <div id="qr-reader"></div>
-    </div>
+  <button class="btn btn-camera" id="btnCamara">Usar cámara</button>
+  <button class="btn btn-galeria" id="btnGaleria">Leer desde foto</button>
+  <button class="btn btn-cancelar" id="btnCancelar">Cancelar</button>
+</main>
 
-    <button class="btn btn-camera" id="btnCamara">Usar cámara</button>
-    <button class="btn btn-galeria" id="btnGaleria">Leer desde foto</button>
-    <button class="btn btn-cancelar" id="btnCancelar">Cancelar</button>
-
-  </main>
-
-  <!-- Html5 QR -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
-
-  <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations()
-      .then(regs => regs.forEach(r => r.unregister()));
-  }
-  </script>
-
-  <script src="scanner.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="scanner.js"></script>
 </body>
 </html>
