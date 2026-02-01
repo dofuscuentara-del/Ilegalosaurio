@@ -6,21 +6,16 @@ if (esDesktop) {
   alert('En laptops se recomienda usar "Leer desde foto"');
 }
 
-// MODO
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) {
   location.replace('index.html');
 }
 
-// =======================
 // INSTANCIA ÚNICA
-// =======================
 let qrScanner = null;
 let scanning = false;
 
-// =======================
 // INICIAR CÁMARA
-// =======================
 async function usarCamara() {
   if (!qrScanner) {
     qrScanner = new Html5Qrcode("qr-reader");
@@ -32,28 +27,28 @@ async function usarCamara() {
     scanning = true;
 
     await qrScanner.start(
-      { facingMode: "environment" },
+      { facingMode: { exact: "environment" } }, // fuerza cámara trasera
       {
         fps: 10,
-        qrbox: { width: 250, height: 250 }
+        qrbox: 250
       },
       qrData => {
         detenerScanner();
         procesarQR(qrData);
       },
-      () => {}
+      err => {
+        console.warn('QR scan error', err);
+      }
     );
 
   } catch (err) {
     scanning = false;
-    alert("No se pudo abrir la cámara");
+    alert("No se pudo abrir la cámara. Revisa permisos o usa 'Leer desde foto'.");
     console.error(err);
   }
 }
 
-// =======================
 // LEER DESDE GALERÍA
-// =======================
 async function usarGaleria() {
   if (!qrScanner) {
     qrScanner = new Html5Qrcode("qr-reader");
@@ -68,8 +63,13 @@ async function usarGaleria() {
 
     try {
       const file = e.target.files[0];
-      const qrData = await qrScanner.scanFile(file, true);
+
+      // Aseguramos que sea un Blob
+      const blob = file instanceof Blob ? file : new Blob([file]);
+
+      const qrData = await qrScanner.scanFile(blob, true);
       procesarQR(qrData);
+
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
       console.error(err);
@@ -79,23 +79,20 @@ async function usarGaleria() {
   input.click();
 }
 
-// =======================
 // DETENER SCANNER
-// =======================
 async function detenerScanner() {
   if (qrScanner && scanning) {
     try {
       await qrScanner.stop();
       await qrScanner.clear();
-    } catch {}
+    } catch (err) {
+      console.warn('Error deteniendo scanner', err);
+    }
   }
   scanning = false;
 }
 
-// =======================
 // PROCESAR QR
-// =======================
-
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
@@ -134,19 +131,10 @@ function procesarQR(qrData) {
     });
 }
 
-
-// =======================
 // EVENTOS
-// =======================
-document.getElementById("btnCamara").onclick = usarCamara;
-document.getElementById("btnGaleria").onclick = usarGaleria;
-
-document.getElementById("btnCancelar").onclick = async () => {
+document.getElementById("btnCamara").addEventListener('click', usarCamara);
+document.getElementById("btnGaleria").addEventListener('click', usarGaleria);
+document.getElementById("btnCancelar").addEventListener('click', async () => {
   await detenerScanner();
-  location.replace("index.html");
-};
-
-
-document.getElementById('btnCamara').onclick = usarCamara;
-document.getElementById('btnCancelar').onclick = () => location.href = 'index.html';
-
+  location.href = 'index.html';
+});
