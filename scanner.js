@@ -1,3 +1,4 @@
+
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const esDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -6,15 +7,11 @@ if (esDesktop) {
   alert('En laptops se recomienda usar "Leer desde foto"');
 }
 
-// MODO
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) {
   location.replace('index.html');
 }
 
-// =======================
-// INSTANCIA ÚNICA
-// =======================
 let qrScanner = null;
 let scanning = false;
 
@@ -32,10 +29,10 @@ async function usarCamara() {
     scanning = true;
 
     await qrScanner.start(
-      { facingMode: "environment" },
+      esDesktop ? { facingMode: "user" } : { facingMode: "environment" },
       {
         fps: 10,
-        qrbox: { width: 250, height: 250 }
+        qrbox: { width: 230, height: 230 }
       },
       qrData => {
         detenerScanner();
@@ -52,7 +49,7 @@ async function usarCamara() {
 }
 
 // =======================
-// LEER DESDE GALERÍA
+// GALERÍA
 // =======================
 async function usarGaleria() {
   if (!qrScanner) {
@@ -80,7 +77,7 @@ async function usarGaleria() {
 }
 
 // =======================
-// DETENER SCANNER
+// DETENER
 // =======================
 async function detenerScanner() {
   if (qrScanner && scanning) {
@@ -95,10 +92,12 @@ async function detenerScanner() {
 // =======================
 // PROCESAR QR
 // =======================
-
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       action: "validarQR",
       qr_id: qrData
@@ -111,8 +110,10 @@ function procesarQR(qrData) {
         return;
       }
 
+      const rol = (data.rol || data.tipo || '').toLowerCase();
+
       localStorage.setItem("empleado_id", data.empleado_id);
-      localStorage.setItem("rol", data.rol);
+      localStorage.setItem("rol", rol);
       localStorage.removeItem("scanner_modo");
 
       if (SCANNER_MODO === "asistencia") {
@@ -121,7 +122,7 @@ function procesarQR(qrData) {
       }
 
       if (SCANNER_MODO === "login") {
-        if (data.rol === "admin") {
+        if (rol === "admin") {
           location.replace("panel_admin.html");
         } else {
           location.replace("panel_empleado.html");
@@ -134,7 +135,6 @@ function procesarQR(qrData) {
     });
 }
 
-
 // =======================
 // EVENTOS
 // =======================
@@ -145,4 +145,3 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
-
