@@ -1,5 +1,5 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
+const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 const empleado_id = localStorage.getItem('empleado_id');
 
 if (!empleado_id) {
@@ -8,9 +8,7 @@ if (!empleado_id) {
 
 /* ⛔ bloquear botón atrás */
 history.pushState(null, '', location.href);
-window.onpopstate = () => {
-  history.pushState(null, '', location.href);
-};
+window.onpopstate = () => { history.pushState(null, '', location.href); };
 
 /* =========================
    CARGAR DATOS EMPLEADO
@@ -31,8 +29,7 @@ fetch(API_URL, {
     return;
   }
 
-  document.getElementById('nombreEmpleado').textContent =
-    res.estado.nombre || 'Empleado';
+  document.getElementById('nombreEmpleado').textContent = res.estado.nombre || 'Empleado';
 
   if (res.estado.foto_url) {
     document.getElementById('fotoEmpleado').src = res.estado.foto_url;
@@ -74,18 +71,24 @@ function registrar(tipo) {
   .then(r => r.json())
   .then(res => {
     if (!res.ok) {
-      alert('Error al registrar');
+      // Manejo de errores específicos desde GAS
+      if(res.error === 'YA_DENTRO') alert('Ya tienes una entrada activa');
+      else if(res.error === 'NO_HAY_ENTRADA') alert('No puedes marcar salida sin entrada');
+      else alert('Error al registrar');
       return;
     }
 
+    // Actualizamos estado local
+    window.ESTADO_ACTUAL = res.estado; // DENTRO | FUERA
+
     alert(`${tipo.toUpperCase()} registrada correctamente`);
 
+    // Limpiamos sesión
     localStorage.removeItem('empleado_id');
     localStorage.removeItem('scanner_modo');
 
+    // Redirigimos al inicio
     window.location.replace('index.html');
   })
-  .catch(() => alert('Error de conexión')); 
+  .catch(() => alert('Error de conexión con el servidor'));
 }
-
-
