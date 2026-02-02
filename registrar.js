@@ -88,6 +88,4 @@ function registrar(tipo) {
   })
   .catch(() => alert('Error de conexión')); 
 }
-xión con el servidor'));
-}
 
