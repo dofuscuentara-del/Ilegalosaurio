@@ -6,8 +6,12 @@ if (esDesktop) alert('En laptops se recomienda usar "Leer desde foto"');
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) location.replace('index.html');
 
-let qrScanner = null, scanning = false;
+let qrScanner = null;
+let scanning = false;
 
+// =======================
+// INICIAR CÁMARA
+// =======================
 async function usarCamara() {
   if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
   if (scanning) return;
@@ -17,7 +21,10 @@ async function usarCamara() {
     await qrScanner.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: 250, height: 250 } },
-      qrData => { detenerScanner(); procesarQR(qrData); },
+      qrData => {
+        detenerScanner();
+        procesarQR(qrData);
+      },
       () => {}
     );
   } catch (err) {
@@ -27,6 +34,9 @@ async function usarCamara() {
   }
 }
 
+// =======================
+// LEER DESDE GALERÍA
+// =======================
 async function usarGaleria() {
   if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
 
@@ -50,34 +60,60 @@ async function usarGaleria() {
   input.click();
 }
 
+// =======================
+// DETENER SCANNER
+// =======================
 async function detenerScanner() {
   if (qrScanner && scanning) {
-    try { await qrScanner.stop(); await qrScanner.clear(); } catch {}
+    try {
+      await qrScanner.stop();
+      await qrScanner.clear();
+    } catch {}
   }
   scanning = false;
 }
 
-async function procesarQR(qrData) {
-  try {
-    const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
-    const res = await fetch(url);
-    const data = await res.json();
+// =======================
+// PROCESAR QR (USANDO GET)
+// =======================
+function procesarQR(qrData) {
+  const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
 
-    if (!data.ok) { alert("QR no válido o empleado inactivo"); return; }
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.ok) {
+        alert("QR no válido");
+        return;
+      }
 
-    localStorage.setItem("empleado_id", data.empleado_id);
-    localStorage.setItem("rol", data.rol || data.tipo);
-    localStorage.removeItem("scanner_modo");
+      localStorage.setItem("empleado_id", data.empleado_id);
+      localStorage.setItem("rol", data.rol);
+      localStorage.removeItem("scanner_modo");
 
-    if (SCANNER_MODO === "asistencia") location.replace("registrar.html");
-    if (SCANNER_MODO === "login") location.replace(data.rol === "admin" ? "panel_admin.html" : "panel_empleado.html");
+      if (SCANNER_MODO === "asistencia") {
+        location.replace("registrar.html");
+        return;
+      }
 
-  } catch (err) {
-    console.error(err);
-    alert("Error de conexión con el servidor.\nVerifica que tu Web App esté desplegado como 'Anyone, even anonymous'.");
-  }
+      if (SCANNER_MODO === "login") {
+        if (data.rol === "admin") location.replace("panel_admin.html");
+        else location.replace("panel_empleado.html");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error de conexión con el servidor");
+    });
 }
 
+// =======================
+// EVENTOS
+// =======================
 document.getElementById("btnCamara").onclick = usarCamara;
 document.getElementById("btnGaleria").onclick = usarGaleria;
-document.getElementById("btnCancelar").onclick = async () => { await detenerScanner(); location.replace("index.html"); };
+
+document.getElementById("btnCancelar").onclick = async () => {
+  await detenerScanner();
+  location.replace("index.html");
+};
