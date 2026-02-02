@@ -13,39 +13,38 @@ if (!SCANNER_MODO) {
 }
 
 // =======================
-// INSTANCIA ÚNICA
+// INSTANCIAS
 // =======================
-let qrScanner = null;
-let scanning = false;
+let qrScannerCamara = null;
+let scanningCamara = false;
+
+// Galería no necesita estado global
+let qrScannerGaleria = null;
 
 // =======================
 // INICIAR CÁMARA
 // =======================
 async function usarCamara() {
-  if (!qrScanner) {
-    qrScanner = new Html5Qrcode("qr-reader");
+  if (!qrScannerCamara) {
+    qrScannerCamara = new Html5Qrcode("qr-reader");
   }
 
-  if (scanning) return;
+  if (scanningCamara) return;
 
   try {
-    scanning = true;
+    scanningCamara = true;
 
-    await qrScanner.start(
+    await qrScannerCamara.start(
       { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 }
-      },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
       qrData => {
-        detenerScanner();
         procesarQR(qrData);
       },
       () => {}
     );
 
   } catch (err) {
-    scanning = false;
+    scanningCamara = false;
     alert("No se pudo abrir la cámara");
     console.error(err);
   }
@@ -55,8 +54,8 @@ async function usarCamara() {
 // LEER DESDE GALERÍA
 // =======================
 async function usarGaleria() {
-  if (!qrScanner) {
-    qrScanner = new Html5Qrcode("qr-reader");
+  if (!qrScannerGaleria) {
+    qrScannerGaleria = new Html5Qrcode("qr-reader-gallery"); // contenedor invisible separado
   }
 
   const input = document.createElement("input");
@@ -68,7 +67,7 @@ async function usarGaleria() {
 
     try {
       const file = e.target.files[0];
-      const qrData = await qrScanner.scanFile(file, true);
+      const qrData = await qrScannerGaleria.scanFile(file, true);
       procesarQR(qrData);
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
@@ -83,26 +82,22 @@ async function usarGaleria() {
 // DETENER SCANNER
 // =======================
 async function detenerScanner() {
-  if (qrScanner && scanning) {
+  if (qrScannerCamara && scanningCamara) {
     try {
-      await qrScanner.stop();
-      await qrScanner.clear();
+      await qrScannerCamara.stop();
+      await qrScannerCamara.clear();
     } catch {}
   }
-  scanning = false;
+  scanningCamara = false;
 }
 
 // =======================
 // PROCESAR QR
 // =======================
-
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify({
-      action: "validarQR",
-      qr_id: qrData
-    })
+    body: JSON.stringify({ action: "validarQR", qr_id: qrData })
   })
     .then(r => r.json())
     .then(data => {
@@ -134,7 +129,6 @@ function procesarQR(qrData) {
     });
 }
 
-
 // =======================
 // EVENTOS
 // =======================
@@ -145,3 +139,4 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
+
