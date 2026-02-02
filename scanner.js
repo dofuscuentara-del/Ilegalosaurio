@@ -1,11 +1,20 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const esDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
-if (esDesktop) alert('En laptops se recomienda usar "Leer desde foto"');
 
+if (esDesktop) {
+  alert('En laptops se recomienda usar "Leer desde foto"');
+}
+
+// MODO
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
-if (!SCANNER_MODO) location.replace('index.html');
+if (!SCANNER_MODO) {
+  location.replace('index.html');
+}
 
+// =======================
+// INSTANCIA ÚNICA
+// =======================
 let qrScanner = null;
 let scanning = false;
 
@@ -13,20 +22,28 @@ let scanning = false;
 // INICIAR CÁMARA
 // =======================
 async function usarCamara() {
-  if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
+  if (!qrScanner) {
+    qrScanner = new Html5Qrcode("qr-reader");
+  }
+
   if (scanning) return;
 
   try {
     scanning = true;
+
     await qrScanner.start(
       { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
       qrData => {
         detenerScanner();
         procesarQR(qrData);
       },
       () => {}
     );
+
   } catch (err) {
     scanning = false;
     alert("No se pudo abrir la cámara");
@@ -38,7 +55,9 @@ async function usarCamara() {
 // LEER DESDE GALERÍA
 // =======================
 async function usarGaleria() {
-  if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
+  if (!qrScanner) {
+    qrScanner = new Html5Qrcode("qr-reader");
+  }
 
   const input = document.createElement("input");
   input.type = "file";
@@ -74,12 +93,17 @@ async function detenerScanner() {
 }
 
 // =======================
-// PROCESAR QR (USANDO GET)
+// PROCESAR QR
 // =======================
-function procesarQR(qrData) {
-  const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
 
-  fetch(url)
+function procesarQR(qrData) {
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "validarQR",
+      qr_id: qrData
+    })
+  })
     .then(r => r.json())
     .then(data => {
       if (!data.ok) {
@@ -97,8 +121,11 @@ function procesarQR(qrData) {
       }
 
       if (SCANNER_MODO === "login") {
-        if (data.rol === "admin") location.replace("panel_admin.html");
-        else location.replace("panel_empleado.html");
+        if (data.rol === "admin") {
+          location.replace("panel_admin.html");
+        } else {
+          location.replace("panel_empleado.html");
+        }
       }
     })
     .catch(err => {
@@ -106,6 +133,7 @@ function procesarQR(qrData) {
       alert("Error de conexión con el servidor");
     });
 }
+
 
 // =======================
 // EVENTOS
