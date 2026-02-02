@@ -3,50 +3,33 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde
 
 const esDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
 
-if (esDesktop) {
-  alert('En laptops se recomienda usar "Leer desde foto"');
-}
-
-// =======================
-// MODO
-// =======================
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) {
   location.replace('index.html');
 }
 
-// =======================
-// INSTANCIA ÚNICA
-// =======================
 let qrScanner = null;
 let scanning = false;
 
 // =======================
-// INICIAR CÁMARA
+// CÁMARA
 // =======================
 async function usarCamara() {
-  if (!qrScanner) {
-    qrScanner = new Html5Qrcode("qr-reader");
-  }
-
   if (scanning) return;
+
+  qrScanner = new Html5Qrcode("qr-reader");
 
   try {
     scanning = true;
 
     await qrScanner.start(
       esDesktop ? { facingMode: "user" } : { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: { width: 230, height: 230 }
-      },
+      { fps: 10, qrbox: 230 },
       qrData => {
         detenerScanner();
         procesarQR(qrData);
-      },
-      () => {}
+      }
     );
-
   } catch (err) {
     scanning = false;
     alert("No se pudo abrir la cámara");
@@ -55,17 +38,13 @@ async function usarCamara() {
 }
 
 // =======================
-// LEER DESDE GALERÍA (FIX REAL)
+// GALERÍA (FIX REAL)
 // =======================
 async function usarGaleria() {
-  if (!qrScanner) {
-    qrScanner = new Html5Qrcode("qr-reader");
-  }
+  await detenerScanner();
 
-  // 🔑 FIX: detener cámara si estaba activa
-  if (scanning) {
-    await detenerScanner();
-  }
+  // 🔑 NUEVA instancia limpia
+  qrScanner = new Html5Qrcode("qr-reader");
 
   const input = document.createElement("input");
   input.type = "file";
@@ -75,8 +54,7 @@ async function usarGaleria() {
     if (!e.target.files.length) return;
 
     try {
-      const file = e.target.files[0];
-      const qrData = await qrScanner.scanFile(file, true);
+      const qrData = await qrScanner.scanFile(e.target.files[0], true);
       procesarQR(qrData);
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
@@ -88,10 +66,10 @@ async function usarGaleria() {
 }
 
 // =======================
-// DETENER SCANNER
+// DETENER
 // =======================
 async function detenerScanner() {
-  if (qrScanner && scanning) {
+  if (qrScanner) {
     try {
       await qrScanner.stop();
       await qrScanner.clear();
@@ -101,15 +79,12 @@ async function detenerScanner() {
 }
 
 // =======================
-// PROCESAR QR (FIX CONEXIÓN)
+// PROCESAR QR (SIN CORS)
 // =======================
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
-    mode: "cors", // 🔑 FIX CONEXIÓN
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       action: "validarQR",
       qr_id: qrData
@@ -122,23 +97,16 @@ function procesarQR(qrData) {
         return;
       }
 
-      const rol = (data.rol || data.tipo || '').toLowerCase();
-
       localStorage.setItem("empleado_id", data.empleado_id);
-      localStorage.setItem("rol", rol);
+      localStorage.setItem("rol", data.rol);
       localStorage.removeItem("scanner_modo");
 
-      if (SCANNER_MODO === "asistencia") {
-        location.replace("registrar.html");
-        return;
-      }
-
       if (SCANNER_MODO === "login") {
-        if (rol === "admin") {
-          location.replace("panel_admin.html");
-        } else {
-          location.replace("panel_empleado.html");
-        }
+        location.replace(
+          data.rol === "admin"
+            ? "panel_admin.html"
+            : "panel_empleado.html"
+        );
       }
     })
     .catch(err => {
@@ -150,10 +118,10 @@ function procesarQR(qrData) {
 // =======================
 // EVENTOS
 // =======================
-document.getElementById("btnCamara").onclick = usarCamara;
-document.getElementById("btnGaleria").onclick = usarGaleria;
-
-document.getElementById("btnCancelar").onclick = async () => {
+btnCamara.onclick = usarCamara;
+btnGaleria.onclick = usarGaleria;
+btnCancelar.onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
+
