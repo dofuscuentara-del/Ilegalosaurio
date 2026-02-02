@@ -7,11 +7,17 @@ if (esDesktop) {
   alert('En laptops se recomienda usar "Leer desde foto"');
 }
 
+// =======================
+// MODO
+// =======================
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) {
   location.replace('index.html');
 }
 
+// =======================
+// INSTANCIA ÚNICA
+// =======================
 let qrScanner = null;
 let scanning = false;
 
@@ -49,11 +55,16 @@ async function usarCamara() {
 }
 
 // =======================
-// GALERÍA
+// LEER DESDE GALERÍA (FIX REAL)
 // =======================
 async function usarGaleria() {
   if (!qrScanner) {
     qrScanner = new Html5Qrcode("qr-reader");
+  }
+
+  // 🔑 FIX: detener cámara si estaba activa
+  if (scanning) {
+    await detenerScanner();
   }
 
   const input = document.createElement("input");
@@ -77,7 +88,7 @@ async function usarGaleria() {
 }
 
 // =======================
-// DETENER
+// DETENER SCANNER
 // =======================
 async function detenerScanner() {
   if (qrScanner && scanning) {
@@ -90,11 +101,12 @@ async function detenerScanner() {
 }
 
 // =======================
-// PROCESAR QR
+// PROCESAR QR (FIX CONEXIÓN)
 // =======================
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
+    mode: "cors", // 🔑 FIX CONEXIÓN
     headers: {
       "Content-Type": "application/json"
     },
