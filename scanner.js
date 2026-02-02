@@ -13,17 +13,17 @@ if (!SCANNER_MODO) {
 }
 
 // =======================
-// INSTANCIAS
+// INSTANCIA ÚNICA PARA CÁMARA
 // =======================
-let qrScannerCamara = null; // Scanner para cámara
-let scanning = false;       // Estado de cámara
+let qrScanner = null;
+let scanning = false;
 
 // =======================
 // INICIAR CÁMARA
 // =======================
 async function usarCamara() {
-  if (!qrScannerCamara) {
-    qrScannerCamara = new Html5Qrcode("qr-reader");
+  if (!qrScanner) {
+    qrScanner = new Html5Qrcode("qr-reader");
   }
 
   if (scanning) return;
@@ -31,12 +31,9 @@ async function usarCamara() {
   try {
     scanning = true;
 
-    await qrScannerCamara.start(
+    await qrScanner.start(
       { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 }
-      },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
       qrData => {
         procesarQR(qrData);
       },
@@ -51,11 +48,10 @@ async function usarCamara() {
 }
 
 // =======================
-// LEER DESDE GALERÍA
+// LEER DESDE GALERÍA (instancia temporal)
 // =======================
 async function usarGaleria() {
-  // Creamos un scanner temporal solo para leer la imagen
-  const tempScanner = new Html5Qrcode("qr-reader");
+  const tempScanner = new Html5Qrcode("qr-reader"); // misma caja, pero temporal
 
   const input = document.createElement("input");
   input.type = "file";
@@ -82,17 +78,17 @@ async function usarGaleria() {
 // DETENER SCANNER
 // =======================
 async function detenerScanner() {
-  if (qrScannerCamara && scanning) {
+  if (qrScanner && scanning) {
     try {
-      await qrScannerCamara.stop();
-      await qrScannerCamara.clear();
+      await qrScanner.stop();
+      await qrScanner.clear();
     } catch {}
   }
   scanning = false;
 }
 
 // =======================
-// PROCESAR QR
+// PROCESAR QR (con rol)
 // =======================
 function procesarQR(qrData) {
   fetch(API_URL, {
@@ -109,12 +105,10 @@ function procesarQR(qrData) {
         return;
       }
 
-      // Guardamos datos y rol
       localStorage.setItem("empleado_id", data.empleado_id);
       localStorage.setItem("rol", data.rol);
       localStorage.removeItem("scanner_modo");
 
-      // Redirección según modo y rol
       if (SCANNER_MODO === "asistencia") {
         location.replace("registrar.html");
         return;
@@ -143,7 +137,3 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
-
-
-});
-
