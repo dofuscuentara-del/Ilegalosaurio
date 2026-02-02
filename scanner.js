@@ -18,9 +18,6 @@ if (!SCANNER_MODO) {
 let qrScannerCamara = null;
 let scanningCamara = false;
 
-// Galería no necesita estado global
-let qrScannerGaleria = null;
-
 // =======================
 // INICIAR CÁMARA
 // =======================
@@ -54,10 +51,9 @@ async function usarCamara() {
 // LEER DESDE GALERÍA
 // =======================
 async function usarGaleria() {
-  if (!qrScannerGaleria) {
-    qrScannerGaleria = new Html5Qrcode("qr-reader-gallery"); // contenedor invisible separado
-  }
-
+  // Creamos una instancia temporal para leer desde archivo
+  const tempScanner = new Html5Qrcode("qr-reader");
+  
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
@@ -67,8 +63,9 @@ async function usarGaleria() {
 
     try {
       const file = e.target.files[0];
-      const qrData = await qrScannerGaleria.scanFile(file, true);
+      const qrData = await tempScanner.scanFile(file, true);
       procesarQR(qrData);
+      await tempScanner.clear(); // limpiar después de leer
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
       console.error(err);
@@ -97,7 +94,10 @@ async function detenerScanner() {
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify({ action: "validarQR", qr_id: qrData })
+    body: JSON.stringify({
+      action: "validarQR",
+      qr_id: qrData
+    })
   })
     .then(r => r.json())
     .then(data => {
@@ -139,4 +139,7 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
+
+};
+
 
