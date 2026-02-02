@@ -28,9 +28,7 @@ async function usarCamara() {
         detenerScanner();
         procesarQR(qrData);
       },
-      err => {
-        console.warn("No detectado aún...", err);
-      }
+      err => console.warn("No detectado aún...", err)
     );
   } catch (err) {
     scanning = false;
@@ -55,7 +53,8 @@ async function usarGaleria() {
     if (!e.target.files.length) return;
 
     try {
-      const qrData = await qrScanner.scanFile(e.target.files[0], true);
+      const file = e.target.files[0];
+      const qrData = await qrScanner.scanFile(file, true);
       procesarQR(qrData);
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
@@ -86,12 +85,9 @@ async function detenerScanner() {
 // =======================
 async function procesarQR(qrData) {
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      mode: "cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "validarQR", qr_id: qrData })
-    });
+    // ⚡ Ajuste: usar GET con query string para evitar preflight CORS
+    const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
+    const res = await fetch(url, { method: "GET" }); // GET en vez de POST evita CORS con Apps Script
 
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
@@ -135,5 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
     location.replace("index.html");
   };
 });
+
+
 
 
