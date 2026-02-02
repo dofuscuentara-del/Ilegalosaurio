@@ -1,5 +1,6 @@
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
+
 const empleado_id = localStorage.getItem('empleado_id');
 
 if (!empleado_id) {
@@ -8,7 +9,9 @@ if (!empleado_id) {
 
 /* ⛔ bloquear botón atrás */
 history.pushState(null, '', location.href);
-window.onpopstate = () => { history.pushState(null, '', location.href); };
+window.onpopstate = () => {
+  history.pushState(null, '', location.href);
+};
 
 /* =========================
    CARGAR DATOS EMPLEADO
@@ -16,7 +19,10 @@ window.onpopstate = () => { history.pushState(null, '', location.href); };
 fetch(API_URL, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ action: 'panelEmpleado', empleado_id })
+  body: JSON.stringify({
+    action: 'panelEmpleado',
+    empleado_id
+  })
 })
 .then(r => r.json())
 .then(res => {
@@ -26,12 +32,14 @@ fetch(API_URL, {
     return;
   }
 
-  document.getElementById('nombreEmpleado').textContent = res.estado.nombre || 'Empleado';
+  document.getElementById('nombreEmpleado').textContent =
+    res.estado.nombre || 'Empleado';
 
   if (res.estado.foto_url) {
     document.getElementById('fotoEmpleado').src = res.estado.foto_url;
   }
 
+  // Guardamos estado actual
   window.ESTADO_ACTUAL = res.estado.estado; // DENTRO | FUERA
 });
 
@@ -42,37 +50,44 @@ document.getElementById('btnEntrada').onclick = () => registrar('entrada');
 document.getElementById('btnSalida').onclick = () => registrar('salida');
 
 function registrar(tipo) {
+
   if (tipo === 'entrada' && window.ESTADO_ACTUAL === 'DENTRO') {
     alert('Ya tienes una entrada activa');
     return;
   }
+
   if (tipo === 'salida' && window.ESTADO_ACTUAL === 'FUERA') {
     alert('No puedes marcar salida sin entrada');
     return;
   }
 
-  if (!confirm(`¿Confirmar ${tipo.toUpperCase()}?`)) return;
+  const confirmar = confirm(`¿Confirmar ${tipo.toUpperCase()}?`);
+  if (!confirmar) return;
 
   fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: tipo, empleado_id })
+    body: JSON.stringify({
+      action: tipo,
+      empleado_id
+    })
   })
   .then(r => r.json())
   .then(res => {
     if (!res.ok) {
-      if(res.error === 'YA_DENTRO') alert('Ya tienes una entrada activa');
-      else if(res.error === 'NO_HAY_ENTRADA') alert('No puedes marcar salida sin entrada');
-      else alert('Error al registrar');
+      alert('Error al registrar');
       return;
     }
 
-    window.ESTADO_ACTUAL = res.estado; // Actualizamos estado local
     alert(`${tipo.toUpperCase()} registrada correctamente`);
 
     localStorage.removeItem('empleado_id');
     localStorage.removeItem('scanner_modo');
+
     window.location.replace('index.html');
   })
-  .catch(() => alert('Error de conexión con el servidor'));
+  .catch(() => alert('Error de conexión')); 
 }
+xión con el servidor'));
+}
+
