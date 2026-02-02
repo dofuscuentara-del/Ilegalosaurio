@@ -1,6 +1,5 @@
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
-
 const esDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
 
 // =======================
@@ -44,9 +43,9 @@ async function usarCamara() {
 // LEER DESDE GALERÍA
 // =======================
 async function usarGaleria() {
-  await detenerScanner(); // detener cámara si estaba activa
+  await detenerScanner();
 
-  // 🔑 Crear nueva instancia limpia para la galería
+  // 🔑 Nueva instancia para galería
   if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
 
   const input = document.createElement("input");
@@ -58,9 +57,7 @@ async function usarGaleria() {
 
     try {
       const file = e.target.files[0];
-
-      // 🔑 ScanFile debe usar `true` para decode multiple QR attempts
-      const qrData = await qrScanner.scanFile(file, true);
+      const qrData = await qrScanner.scanFile(file, true); // decode multiple QR attempts
       procesarQR(qrData);
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
@@ -93,7 +90,7 @@ async function procesarQR(qrData) {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      mode: "cors", // 🔑 permite cross-origin
+      mode: "cors",
       headers: {
         "Content-Type": "application/json"
       },
@@ -103,9 +100,8 @@ async function procesarQR(qrData) {
       })
     });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
+    // Si el servidor devuelve error HTTP
+    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
     const data = await res.json();
 
@@ -114,16 +110,17 @@ async function procesarQR(qrData) {
       return;
     }
 
+    // Guardar datos localmente
     localStorage.setItem("empleado_id", data.empleado_id);
     const rol = (data.rol || data.tipo || '').toLowerCase();
     localStorage.setItem("rol", rol);
     localStorage.removeItem("scanner_modo");
 
+    // Redirección según modo
     if (SCANNER_MODO === "asistencia") {
       location.replace("registrar.html");
       return;
     }
-
     if (SCANNER_MODO === "login") {
       location.replace(rol === "admin" ? "panel_admin.html" : "panel_empleado.html");
     }
@@ -132,7 +129,6 @@ async function procesarQR(qrData) {
     console.error(err);
     alert(
       "Error de conexión con el servidor.\n" +
-      "Verifica que tu Web App de Google Apps Script esté desplegado como 'Anyone, even anonymous'."
     );
   }
 }
@@ -146,6 +142,3 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
-
-
-
