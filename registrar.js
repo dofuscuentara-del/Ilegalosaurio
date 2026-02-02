@@ -16,10 +16,7 @@ window.onpopstate = () => { history.pushState(null, '', location.href); };
 fetch(API_URL, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    action: 'panelEmpleado',
-    empleado_id
-  })
+  body: JSON.stringify({ action: 'panelEmpleado', empleado_id })
 })
 .then(r => r.json())
 .then(res => {
@@ -35,7 +32,6 @@ fetch(API_URL, {
     document.getElementById('fotoEmpleado').src = res.estado.foto_url;
   }
 
-  // Guardamos estado actual
   window.ESTADO_ACTUAL = res.estado.estado; // DENTRO | FUERA
 });
 
@@ -46,48 +42,36 @@ document.getElementById('btnEntrada').onclick = () => registrar('entrada');
 document.getElementById('btnSalida').onclick = () => registrar('salida');
 
 function registrar(tipo) {
-
   if (tipo === 'entrada' && window.ESTADO_ACTUAL === 'DENTRO') {
     alert('Ya tienes una entrada activa');
     return;
   }
-
   if (tipo === 'salida' && window.ESTADO_ACTUAL === 'FUERA') {
     alert('No puedes marcar salida sin entrada');
     return;
   }
 
-  const confirmar = confirm(`¿Confirmar ${tipo.toUpperCase()}?`);
-  if (!confirmar) return;
+  if (!confirm(`¿Confirmar ${tipo.toUpperCase()}?`)) return;
 
   fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: tipo,
-      empleado_id
-    })
+    body: JSON.stringify({ action: tipo, empleado_id })
   })
   .then(r => r.json())
   .then(res => {
     if (!res.ok) {
-      // Manejo de errores específicos desde GAS
       if(res.error === 'YA_DENTRO') alert('Ya tienes una entrada activa');
       else if(res.error === 'NO_HAY_ENTRADA') alert('No puedes marcar salida sin entrada');
       else alert('Error al registrar');
       return;
     }
 
-    // Actualizamos estado local
-    window.ESTADO_ACTUAL = res.estado; // DENTRO | FUERA
-
+    window.ESTADO_ACTUAL = res.estado; // Actualizamos estado local
     alert(`${tipo.toUpperCase()} registrada correctamente`);
 
-    // Limpiamos sesión
     localStorage.removeItem('empleado_id');
     localStorage.removeItem('scanner_modo');
-
-    // Redirigimos al inicio
     window.location.replace('index.html');
   })
   .catch(() => alert('Error de conexión con el servidor'));
