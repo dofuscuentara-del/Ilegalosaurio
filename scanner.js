@@ -45,7 +45,9 @@ async function usarCamara() {
 // =======================
 async function usarGaleria() {
   await detenerScanner(); // detener cámara si estaba activa
-  qrScanner = new Html5Qrcode("qr-reader"); // nueva instancia
+
+  // 🔑 Crear nueva instancia limpia para la galería
+  if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
 
   const input = document.createElement("input");
   input.type = "file";
@@ -55,7 +57,10 @@ async function usarGaleria() {
     if (!e.target.files.length) return;
 
     try {
-      const qrData = await qrScanner.scanFile(e.target.files[0], true);
+      const file = e.target.files[0];
+
+      // 🔑 ScanFile debe usar `true` para decode multiple QR attempts
+      const qrData = await qrScanner.scanFile(file, true);
       procesarQR(qrData);
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
@@ -74,7 +79,9 @@ async function detenerScanner() {
     try {
       await qrScanner.stop();
       await qrScanner.clear();
-    } catch {}
+    } catch (err) {
+      console.warn("Error al detener scanner", err);
+    }
   }
   scanning = false;
 }
@@ -86,7 +93,7 @@ async function procesarQR(qrData) {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      mode: "cors", // permite conexión cross-origin
+      mode: "cors", // 🔑 permite cross-origin
       headers: {
         "Content-Type": "application/json"
       },
@@ -95,6 +102,10 @@ async function procesarQR(qrData) {
         qr_id: qrData
       })
     });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
 
     const data = await res.json();
 
@@ -119,7 +130,10 @@ async function procesarQR(qrData) {
 
   } catch (err) {
     console.error(err);
-    alert("Error de conexión con el servidor. Revisa tu URL o despliegue de Apps Script.");
+    alert(
+      "Error de conexión con el servidor.\n" +
+      "Verifica que tu Web App de Google Apps Script esté desplegado como 'Anyone, even anonymous'."
+    );
   }
 }
 
@@ -132,5 +146,6 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
+
 
 
