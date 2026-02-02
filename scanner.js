@@ -13,7 +13,7 @@ if (!SCANNER_MODO) {
 }
 
 // =======================
-// INSTANCIA ÚNICA PARA CÁMARA
+// INSTANCIA CÁMARA
 // =======================
 let qrScanner = null;
 let scanning = false;
@@ -30,16 +30,12 @@ async function usarCamara() {
 
   try {
     scanning = true;
-
     await qrScanner.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: 250, height: 250 } },
-      qrData => {
-        procesarQR(qrData);
-      },
+      qrData => procesarQR(qrData),
       () => {}
     );
-
   } catch (err) {
     scanning = false;
     alert("No se pudo abrir la cámara");
@@ -48,10 +44,11 @@ async function usarCamara() {
 }
 
 // =======================
-// LEER DESDE GALERÍA (instancia temporal)
+// LEER DESDE GALERÍA
 // =======================
 async function usarGaleria() {
-  const tempScanner = new Html5Qrcode("qr-reader"); // misma caja, pero temporal
+  // Instancia temporal solo para leer la foto
+  const tempScanner = new Html5Qrcode("qr-reader");
 
   const input = document.createElement("input");
   input.type = "file";
@@ -64,7 +61,7 @@ async function usarGaleria() {
       const file = e.target.files[0];
       const qrData = await tempScanner.scanFile(file, true);
       procesarQR(qrData);
-      await tempScanner.clear(); // limpiar la instancia temporal
+      await tempScanner.clear(); // destruye la instancia temporal
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
       console.error(err);
@@ -75,7 +72,7 @@ async function usarGaleria() {
 }
 
 // =======================
-// DETENER SCANNER
+// DETENER CÁMARA
 // =======================
 async function detenerScanner() {
   if (qrScanner && scanning) {
@@ -88,15 +85,12 @@ async function detenerScanner() {
 }
 
 // =======================
-// PROCESAR QR (con rol)
+// PROCESAR QR (ROL FUNCIONAL)
 // =======================
 function procesarQR(qrData) {
   fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify({
-      action: "validarQR",
-      qr_id: qrData
-    })
+    body: JSON.stringify({ action: "validarQR", qr_id: qrData })
   })
     .then(r => r.json())
     .then(data => {
@@ -137,3 +131,6 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
+
+};
+
