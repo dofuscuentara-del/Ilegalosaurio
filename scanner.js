@@ -1,6 +1,5 @@
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
-
 const esDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
 
 // =======================
@@ -17,6 +16,7 @@ let scanning = false;
 // =======================
 async function usarCamara() {
   if (scanning) return;
+
   if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
 
   try {
@@ -43,7 +43,8 @@ async function usarCamara() {
 // LEER DESDE GALERÍA
 // =======================
 async function usarGaleria() {
-  await detenerScanner(); // detener cámara si estaba activa
+  await detenerScanner(); // detener scanner si estaba activo
+
   if (!qrScanner) qrScanner = new Html5Qrcode("qr-reader");
 
   const input = document.createElement("input");
@@ -52,9 +53,9 @@ async function usarGaleria() {
 
   input.onchange = async e => {
     if (!e.target.files.length) return;
+
     try {
-      const file = e.target.files[0];
-      const qrData = await qrScanner.scanFile(file, true);
+      const qrData = await qrScanner.scanFile(e.target.files[0], true);
       procesarQR(qrData);
     } catch (err) {
       alert("No se detectó ningún QR en la imagen");
@@ -87,14 +88,12 @@ async function procesarQR(qrData) {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        action: "validarQR",
-        qr_id: qrData
-      })
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "validarQR", qr_id: qrData })
     });
+
+    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
     const data = await res.json();
 
@@ -116,7 +115,6 @@ async function procesarQR(qrData) {
     if (SCANNER_MODO === "login") {
       location.replace(rol === "admin" ? "panel_admin.html" : "panel_empleado.html");
     }
-
   } catch (err) {
     console.error(err);
     alert(
@@ -127,11 +125,15 @@ async function procesarQR(qrData) {
 }
 
 // =======================
-// EVENTOS
+// ASIGNAR EVENTOS
 // =======================
-document.getElementById("btnCamara").onclick = usarCamara;
-document.getElementById("btnGaleria").onclick = usarGaleria;
-document.getElementById("btnCancelar").onclick = async () => {
-  await detenerScanner();
-  location.replace("index.html");
-};
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("btnCamara").onclick = usarCamara;
+  document.getElementById("btnGaleria").onclick = usarGaleria;
+  document.getElementById("btnCancelar").onclick = async () => {
+    await detenerScanner();
+    location.replace("index.html");
+  };
+});
+
+
