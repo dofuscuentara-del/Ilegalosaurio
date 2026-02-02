@@ -85,9 +85,9 @@ async function detenerScanner() {
 // =======================
 async function procesarQR(qrData) {
   try {
-    // ⚡ Ajuste: usar GET con query string para evitar preflight CORS
+    // 🔑 Ajuste: usamos GET con query string para evitar CORS
     const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
-    const res = await fetch(url, { method: "GET" }); // GET en vez de POST evita CORS con Apps Script
+    const res = await fetch(url, { method: "GET" }); // GET evita preflight CORS
 
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
