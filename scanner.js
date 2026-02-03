@@ -110,7 +110,10 @@ function procesarQR(qrData) {
 
       // Guardamos datos del empleado y rol
       localStorage.setItem("empleado_id", data.empleado_id);
-      localStorage.setItem("rol", data.rol); // admin o empleado
+      // Limpiar espacios y pasar a minúsculas para evitar errores
+const rol = data.rol.trim().toLowerCase();
+localStorage.setItem("rol", rol);
+
       localStorage.removeItem("scanner_modo");
 
       // Redirección según modo y rol
@@ -120,15 +123,15 @@ function procesarQR(qrData) {
       }
 
       if (SCANNER_MODO === "login") {
-        const rol = data.rol;
-        if (rol === "admin") {
-          location.replace("panel_admin.html");
-        } else if (rol === "empleado") {
-          location.replace("panel_empleado.html");
-        } else {
-          alert("Rol no reconocido");
-        }
-      }
+  if (rol === "admin") {
+    location.replace("panel_admin.html");
+  } else if (rol === "empleado") {
+    location.replace("panel_empleado.html");
+  } else {
+    alert("Rol no reconocido");
+  }
+}
+
     })
     .catch(err => {
       console.error(err);
@@ -146,3 +149,4 @@ document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
   location.replace("index.html");
 };
+
