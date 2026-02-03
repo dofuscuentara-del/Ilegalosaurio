@@ -8,10 +8,16 @@ if (esDesktop) {
 }
 
 // MODO (asistencia o login)
-const SCANNER_MODO = localStorage.getItem('scanner_modo');
+let SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) {
   location.replace('index.html');
 }
+
+// =======================
+// LIMPIAR LOCALSTORAGE AL INICIAR SCANNER
+// =======================
+localStorage.removeItem('empleado_id');
+localStorage.removeItem('rol');
 
 // =======================
 // INSTANCIA ÚNICA
@@ -94,10 +100,13 @@ async function detenerScanner() {
 }
 
 // =======================
-// PROCESAR QR (CAMBIO A GET)
+// PROCESAR QR (GET)
 // =======================
 function procesarQR(qrData) {
-  // Construir URL con query params para GET
+  // Limpiar datos antiguos antes de procesar nuevo QR
+  localStorage.removeItem("empleado_id");
+  localStorage.removeItem("rol");
+
   const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
 
   fetch(url)
@@ -110,9 +119,8 @@ function procesarQR(qrData) {
 
       // Guardamos datos del empleado y rol
       localStorage.setItem("empleado_id", data.empleado_id);
-      // Limpiar espacios y pasar a minúsculas para evitar errores
-const rol = data.rol.trim().toLowerCase();
-localStorage.setItem("rol", rol);
+      const rol = data.rol.trim().toLowerCase(); // limpiar espacios y minúsculas
+      localStorage.setItem("rol", rol);
 
       localStorage.removeItem("scanner_modo");
 
@@ -123,15 +131,14 @@ localStorage.setItem("rol", rol);
       }
 
       if (SCANNER_MODO === "login") {
-  if (rol === "admin") {
-    location.replace("panel_admin.html");
-  } else if (rol === "empleado") {
-    location.replace("panel_empleado.html");
-  } else {
-    alert("Rol no reconocido");
-  }
-}
-
+        if (rol === "admin") {
+          location.replace("panel_admin.html");
+        } else if (rol === "empleado") {
+          location.replace("panel_empleado.html");
+        } else {
+          alert("Rol no reconocido");
+        }
+      }
     })
     .catch(err => {
       console.error(err);
@@ -147,6 +154,11 @@ document.getElementById("btnGaleria").onclick = usarGaleria;
 
 document.getElementById("btnCancelar").onclick = async () => {
   await detenerScanner();
+  localStorage.removeItem("empleado_id");
+  localStorage.removeItem("rol");
+  localStorage.removeItem("scanner_modo");
   location.replace("index.html");
 };
+
+
 
