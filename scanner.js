@@ -7,7 +7,7 @@ if (esDesktop) {
   alert('En laptops se recomienda usar "Leer desde foto"');
 }
 
-// MODO
+// MODO (asistencia o login)
 const SCANNER_MODO = localStorage.getItem('scanner_modo');
 if (!SCANNER_MODO) {
   location.replace('index.html');
@@ -97,20 +97,20 @@ async function detenerScanner() {
 // PROCESAR QR (CAMBIO A GET)
 // =======================
 function procesarQR(qrData) {
-  // Construir URL con query params
+  // Construir URL con query params para GET
   const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
 
   fetch(url)
     .then(r => r.json())
     .then(data => {
       if (!data.ok) {
-        alert("QR no válido");
+        alert("QR no válido o empleado inactivo");
         return;
       }
 
-      // Guardamos los datos y el rol
+      // Guardamos datos del empleado y rol
       localStorage.setItem("empleado_id", data.empleado_id);
-      localStorage.setItem("rol", data.rol); // <-- rol detectado correctamente
+      localStorage.setItem("rol", data.rol); // admin o empleado
       localStorage.removeItem("scanner_modo");
 
       // Redirección según modo y rol
