@@ -14,34 +14,30 @@ window.onpopstate = () => {
 };
 
 /* =========================
-   CARGAR DATOS EMPLEADO
+   CARGAR DATOS EMPLEADO (GET)
 ========================= */
-fetch(API_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    action: 'panelEmpleado',
-    empleado_id
+fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`)
+  .then(r => r.json())
+  .then(res => {
+    if (!res.ok) {
+      alert('No se pudo cargar empleado');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    document.getElementById('nombreEmpleado').textContent =
+      res.estado.nombre || 'Empleado';
+
+    if (res.estado.foto_url) {
+      document.getElementById('fotoEmpleado').src = res.estado.foto_url;
+    }
+
+    // Guardamos estado actual
+    window.ESTADO_ACTUAL = res.estado.estado; // DENTRO | FUERA
   })
-})
-.then(r => r.json())
-.then(res => {
-  if (!res.ok) {
-    alert('No se pudo cargar empleado');
-    window.location.href = 'index.html';
-    return;
-  }
-
-  document.getElementById('nombreEmpleado').textContent =
-    res.estado.nombre || 'Empleado';
-
-  if (res.estado.foto_url) {
-    document.getElementById('fotoEmpleado').src = res.estado.foto_url;
-  }
-
-  // Guardamos estado actual
-  window.ESTADO_ACTUAL = res.estado.estado; // DENTRO | FUERA
-});
+  .catch(() => {
+    alert('Error de conexión al cargar empleado');
+  });
 
 /* =========================
    BOTONES
@@ -64,28 +60,25 @@ function registrar(tipo) {
   const confirmar = confirm(`¿Confirmar ${tipo.toUpperCase()}?`);
   if (!confirmar) return;
 
-  fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: tipo,
-      empleado_id
+  // Construir URL GET para registrar
+  const url = `${API_URL}?action=${tipo}&empleado_id=${encodeURIComponent(empleado_id)}`;
+
+  fetch(url)
+    .then(r => r.json())
+    .then(res => {
+      if (!res.ok) {
+        alert('Error al registrar: ' + (res.error || 'desconocido'));
+        return;
+      }
+
+      alert(`${tipo.toUpperCase()} registrada correctamente`);
+
+      localStorage.removeItem('empleado_id');
+      localStorage.removeItem('scanner_modo');
+
+      window.location.replace('index.html');
     })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (!res.ok) {
-      alert('Error al registrar');
-      return;
-    }
-
-    alert(`${tipo.toUpperCase()} registrada correctamente`);
-
-    localStorage.removeItem('empleado_id');
-    localStorage.removeItem('scanner_modo');
-
-    window.location.replace('index.html');
-  })
-  .catch(() => alert('Error de conexión')); 
+    .catch(() => {
+      alert('Error de conexión al registrar');
+    });
 }
-
