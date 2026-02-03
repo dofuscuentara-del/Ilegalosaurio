@@ -2,8 +2,8 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 // Obtenemos empleado_id y rol desde el scanner
-const empleado_id = localStorage.getItem('empleado_id');
-const rol = localStorage.getItem('rol'); // <-- rol guardado en scanner
+let empleado_id = localStorage.getItem('empleado_id');
+let rol = localStorage.getItem('rol'); // <-- rol guardado en scanner
 
 if (!empleado_id || !rol) {
   window.location.href = 'index.html';
@@ -16,6 +16,11 @@ window.onpopstate = () => {
 };
 
 /* =========================
+   LIMPIAR LOCALSTORAGE SI ES NECESARIO
+========================= */
+localStorage.removeItem('scanner_modo');
+
+/* =========================
    CARGAR DATOS EMPLEADO (GET)
 ========================= */
 fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`)
@@ -23,7 +28,7 @@ fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado
   .then(res => {
     if (!res.ok) {
       alert('No se pudo cargar empleado');
-      window.location.href = 'index.html';
+      limpiarYSalir();
       return;
     }
 
@@ -37,13 +42,15 @@ fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado
     // Guardamos estado actual
     window.ESTADO_ACTUAL = res.estado.estado; // DENTRO | FUERA
 
-    // Guardamos el rol correctamente (si no vino del scanner)
+    // Guardamos el rol correctamente si no estaba definido
     if (!rol && res.estado.rol) {
-      localStorage.setItem('rol', res.estado.rol);
+      rol = res.estado.rol.trim().toLowerCase();
+      localStorage.setItem('rol', rol);
     }
   })
   .catch(() => {
     alert('Error de conexión al cargar empleado');
+    limpiarYSalir();
   });
 
 /* =========================
@@ -80,13 +87,25 @@ function registrar(tipo) {
 
       alert(`${tipo.toUpperCase()} registrada correctamente`);
 
-      // Limpiar solo scanner_modo, pero no rol
+      // Limpiar solo empleado_id y scanner_modo
       localStorage.removeItem('empleado_id');
       localStorage.removeItem('scanner_modo');
+
+      // Mantener rol hasta que cierre sesión
+      // localStorage.removeItem('rol'); <-- no hacemos esto
 
       window.location.replace('index.html');
     })
     .catch(() => {
       alert('Error de conexión al registrar');
     });
+}
+
+// =========================
+// FUNCIONES AUXILIARES
+// =========================
+function limpiarYSalir() {
+  localStorage.removeItem('empleado_id');
+  localStorage.removeItem('scanner_modo');
+  window.location.href = 'index.html';
 }
