@@ -1,13 +1,15 @@
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
+// Obtenemos empleado_id y rol desde el scanner
 const empleado_id = localStorage.getItem('empleado_id');
+const rol = localStorage.getItem('rol'); // <-- rol guardado en scanner
 
-if (!empleado_id) {
+if (!empleado_id || !rol) {
   window.location.href = 'index.html';
 }
 
-/* ⛔ bloquear botón atrás */
+/* ⛔ Bloquear botón atrás */
 history.pushState(null, '', location.href);
 window.onpopstate = () => {
   history.pushState(null, '', location.href);
@@ -34,6 +36,11 @@ fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado
 
     // Guardamos estado actual
     window.ESTADO_ACTUAL = res.estado.estado; // DENTRO | FUERA
+
+    // Guardamos el rol correctamente (si no vino del scanner)
+    if (!rol && res.estado.rol) {
+      localStorage.setItem('rol', res.estado.rol);
+    }
   })
   .catch(() => {
     alert('Error de conexión al cargar empleado');
@@ -73,6 +80,7 @@ function registrar(tipo) {
 
       alert(`${tipo.toUpperCase()} registrada correctamente`);
 
+      // Limpiar solo scanner_modo, pero no rol
       localStorage.removeItem('empleado_id');
       localStorage.removeItem('scanner_modo');
 
