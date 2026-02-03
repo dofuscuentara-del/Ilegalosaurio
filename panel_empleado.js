@@ -41,7 +41,6 @@ cargarFotoLocal();
 
 async function cargarPanel() {
   try {
-    // Adaptado a GET
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
     const res = await fetch(url);
     const data = await res.json();
@@ -81,11 +80,18 @@ inputFoto.addEventListener('change', () => {
   const reader = new FileReader();
   reader.onload = async () => {
     try {
-      // Codificamos base64 para GET
-      const base64Encoded = encodeURIComponent(reader.result);
-      const url = `${API_URL}?action=subirFotoPerfil&empleado_id=${encodeURIComponent(empleado_id)}&tipo=empleado&base64=${base64Encoded}`;
+      // Usar POST para subir la foto
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'subirFotoPerfil',
+          empleado_id,
+          tipo: 'empleado',
+          base64: reader.result
+        })
+      });
 
-      const res = await fetch(url);
       const data = await res.json();
       if (!data.ok) {
         alert('Error al subir foto');
