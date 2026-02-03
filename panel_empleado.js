@@ -1,3 +1,4 @@
+
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const empleado_id = localStorage.getItem('empleado_id');
@@ -40,24 +41,26 @@ cargarFotoLocal();
 
 async function cargarPanel() {
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'panelEmpleado',
-        empleado_id
-      })
-    });
-
+    // Adaptado a GET
+    const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
+    const res = await fetch(url);
     const data = await res.json();
+
     if (!data.ok) {
       alert('No se pudo cargar el panel');
       return;
     }
 
-    renderEstado(data.estado);
-    renderHistorial(data.resumen.dias);
-    horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen.total_horas}`;
+    renderEstado(data.estado.estado); // Estado DENTRO/FUERA
+    renderHistorial(data.resumen?.dias || []); // Manejo seguro si resumen no existe
+    horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
+
+    // Actualizar foto y nombre del empleado
+    if (data.estado.foto_url) {
+      fotoPerfilEl.src = data.estado.foto_url;
+      localStorage.setItem('foto_perfil', data.estado.foto_url);
+    }
+    document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
 
   } catch (err) {
     console.error(err);
@@ -68,9 +71,7 @@ async function cargarPanel() {
 /* =========================
    FOTO PERFIL
 ========================= */
-btnCambiarFoto.addEventListener('click', () => {
-  inputFoto.click();
-});
+btnCambiarFoto.addEventListener('click', () => inputFoto.click());
 
 inputFoto.addEventListener('change', () => {
   const file = inputFoto.files[0];
@@ -79,17 +80,11 @@ inputFoto.addEventListener('change', () => {
   const reader = new FileReader();
   reader.onload = async () => {
     try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'subirFotoPerfil',
-          empleado_id,
-          tipo: 'empleado',
-          base64: reader.result
-        })
-      });
+      // Codificamos base64 para GET
+      const base64Encoded = encodeURIComponent(reader.result);
+      const url = `${API_URL}?action=subirFotoPerfil&empleado_id=${encodeURIComponent(empleado_id)}&tipo=empleado&base64=${base64Encoded}`;
 
+      const res = await fetch(url);
       const data = await res.json();
       if (!data.ok) {
         alert('Error al subir foto');
@@ -123,16 +118,10 @@ btnSalida.addEventListener('click', () => marcar('salida'));
 
 async function marcar(tipo) {
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: tipo,
-        empleado_id
-      })
-    });
-
+    const url = `${API_URL}?action=${tipo}&empleado_id=${encodeURIComponent(empleado_id)}`;
+    const res = await fetch(url);
     const data = await res.json();
+
     if (!data.ok) {
       alert(data.error || 'Error al registrar');
       return;
@@ -169,27 +158,17 @@ btnCalcular.addEventListener('click', async () => {
   }
 
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'resumenRango',
-        empleado_id,
-        desde,
-        hasta
-      })
-    });
-
+    const url = `${API_URL}?action=resumenRango&empleado_id=${encodeURIComponent(empleado_id)}&desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
+    const res = await fetch(url);
     const data = await res.json();
+
     if (!data.ok) {
       alert('No se pudo calcular');
       return;
     }
 
     const total = data.total_horas * sueldo;
-
-    resultadoCalcEl.textContent =
-      `Horas: ${data.total_horas} | Total: $${total.toFixed(2)}`;
+    resultadoCalcEl.textContent = `Horas: ${data.total_horas} | Total: $${total.toFixed(2)}`;
 
   } catch (err) {
     console.error(err);
@@ -220,5 +199,4 @@ function renderHistorial(dias) {
     li.innerHTML = `<span>${d.fecha}</span><span>${d.horas} h</span>`;
     listaDiasEl.appendChild(li);
   });
-} 
-
+}
