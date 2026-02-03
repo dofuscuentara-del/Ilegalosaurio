@@ -1,3 +1,4 @@
+
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const esDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -93,17 +94,13 @@ async function detenerScanner() {
 }
 
 // =======================
-// PROCESAR QR
+// PROCESAR QR (CAMBIO A GET)
 // =======================
-
 function procesarQR(qrData) {
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "validarQR",
-      qr_id: qrData
-    })
-  })
+  // Construir URL con query params
+  const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}`;
+
+  fetch(url)
     .then(r => r.json())
     .then(data => {
       if (!data.ok) {
@@ -123,7 +120,6 @@ function procesarQR(qrData) {
       }
 
       if (SCANNER_MODO === "login") {
-        // Aquí usamos el rol guardado directamente
         const rol = data.rol;
         if (rol === "admin") {
           location.replace("panel_admin.html");
