@@ -21,9 +21,9 @@ window.onpopstate = () => {
 localStorage.removeItem('scanner_modo');
 
 /* =========================
-   CARGAR DATOS EMPLEADO (GET)
+   CARGAR DATOS EMPLEADO (GET con timestamp)
 ========================= */
-fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`)
+fetch(`${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}&t=${Date.now()}`)
   .then(r => r.json())
   .then(res => {
     if (!res.ok) {
@@ -74,8 +74,8 @@ function registrar(tipo) {
   const confirmar = confirm(`¿Confirmar ${tipo.toUpperCase()}?`);
   if (!confirmar) return;
 
-  // Construir URL GET para registrar
-  const url = `${API_URL}?action=${tipo}&empleado_id=${encodeURIComponent(empleado_id)}`;
+  // Construir URL GET para registrar con timestamp
+  const url = `${API_URL}?action=${tipo}&empleado_id=${encodeURIComponent(empleado_id)}&t=${Date.now()}`;
 
   fetch(url)
     .then(r => r.json())
