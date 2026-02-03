@@ -51,8 +51,9 @@ async function cargarPanel() {
       return;
     }
 
+    // Manejo seguro si resumen no existe
     renderEstado(data.estado.estado); // Estado DENTRO/FUERA
-    renderHistorial(data.resumen?.dias || []); // Manejo seguro si resumen no existe
+    renderHistorial(data.resumen?.dias || []);
     horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
 
     // Actualizar foto y nombre del empleado
