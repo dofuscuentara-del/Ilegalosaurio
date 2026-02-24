@@ -123,11 +123,16 @@ function procesarQR(qrData) {
       }
 
       // Guardamos datos del empleado y rol
-      localStorage.setItem("empleado_id", data.empleado_id);
       const rol = data.rol.trim().toLowerCase(); // limpiar espacios y minúsculas
-      localStorage.setItem("rol", rol);
+const recordar = localStorage.getItem("recordar_tmp");
 
-      localStorage.removeItem("scanner_modo");
+if (recordar === "true") {
+  localStorage.setItem("empleado_id", data.empleado_id);
+  localStorage.setItem("rol", rol);
+}
+
+localStorage.removeItem("recordar_tmp");
+localStorage.removeItem("scanner_modo");
 
       // Redirección según modo y rol
       if (SCANNER_MODO === "asistencia") {
@@ -164,4 +169,5 @@ document.getElementById("btnCancelar").onclick = async () => {
   localStorage.removeItem("scanner_modo");
   location.replace("index.html");
 };
+
 
