@@ -21,10 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'scanner.html';
   });
 
-  btnPanel.addEventListener('click', () => {
-    // modo login
-    localStorage.setItem('scanner_modo', 'login');
-    window.location.href = 'scanner.html';
-  });
+btnPanel.addEventListener('click', () => {
+  const check = document.getElementById("recordarSesion").checked;
+  localStorage.setItem("recordar_tmp", check);
+
+  localStorage.setItem('scanner_modo', 'login');
+  window.location.href = 'scanner.html';
 });
+
 
