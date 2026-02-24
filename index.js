@@ -1,3 +1,15 @@
+
+const empleado_id = localStorage.getItem("empleado_id");
+const rol = localStorage.getItem("rol");
+
+if (empleado_id && rol) {
+  if (rol === "admin") {
+    location.replace("panel_admin.html");
+  } else if (rol === "empleado") {
+    location.replace("panel_empleado.html");
+  }
+}
+
 // index.js
 document.addEventListener('DOMContentLoaded', () => {
   const btnEscanear = document.getElementById('btnEscanear');
@@ -15,3 +27,4 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'scanner.html';
   });
 });
+
