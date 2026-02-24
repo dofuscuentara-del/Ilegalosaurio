@@ -1,36 +1,42 @@
 // index.js
-document.addEventListener('DOMContentLoaded', () => {
 
-  // 🔹 AUTO LOGIN PRIMERO
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ===== AUTO LOGIN =====
   const empleado_id = localStorage.getItem("empleado_id");
   const rol = localStorage.getItem("rol");
 
   if (empleado_id && rol) {
     if (rol === "admin") {
-      location.replace("panel_admin.html");
+      window.location.href = "panel_admin.html";
       return;
-    } else if (rol === "empleado") {
-      location.replace("panel_empleado.html");
+    }
+    if (rol === "empleado") {
+      window.location.href = "panel_empleado.html";
       return;
     }
   }
 
-  // 🔹 LUEGO BOTONES
-  const btnEscanear = document.getElementById('btnEscanear');
-  const btnPanel = document.getElementById('btnPanel');
+  // ===== BOTONES =====
+  const btnEscanear = document.getElementById("btnEscanear");
+  const btnPanel = document.getElementById("btnPanel");
 
-  btnEscanear.addEventListener('click', () => {
-    localStorage.setItem('scanner_modo', 'asistencia');
-    window.location.href = 'scanner.html';
-  });
+  if (btnEscanear) {
+    btnEscanear.onclick = function () {
+      localStorage.setItem("scanner_modo", "asistencia");
+      window.location.href = "scanner.html";
+    };
+  }
 
-  btnPanel.addEventListener('click', () => {
-    const checkbox = document.getElementById("recordarSesion");
-    const check = checkbox ? checkbox.checked : false;
+  if (btnPanel) {
+    btnPanel.onclick = function () {
+      const checkbox = document.getElementById("recordarSesion");
+      const check = checkbox ? checkbox.checked : false;
 
-    localStorage.setItem("recordar_tmp", check);
-    localStorage.setItem('scanner_modo', 'login');
-    window.location.href = 'scanner.html';
-  });
+      localStorage.setItem("recordar_tmp", check);
+      localStorage.setItem("scanner_modo", "login");
+      window.location.href = "scanner.html";
+    };
+  }
 
 });
