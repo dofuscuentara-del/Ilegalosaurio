@@ -16,8 +16,9 @@ if (!SCANNER_MODO) {
 // =======================
 // LIMPIAR LOCALSTORAGE AL INICIAR SCANNER
 // =======================
-localStorage.removeItem('empleado_id');
-localStorage.removeItem('rol');
+//localStorage.removeItem('empleado_id');
+//localStorage.removeItem('rol');
+
 
 // =======================
 // INSTANCIA ÚNICA
@@ -103,9 +104,12 @@ async function detenerScanner() {
 // PROCESAR QR (GET con timestamp para evitar cache)
 // =======================
 function procesarQR(qrData) {
+  
+  //=======
   // Limpiar datos antiguos antes de procesar nuevo QR
-  localStorage.removeItem("empleado_id");
-  localStorage.removeItem("rol");
+  //=======
+  //localStorage.removeItem("empleado_id");
+  //localStorage.removeItem("rol");
 
   // Agregamos t=timestamp para evitar cache
   const url = `${API_URL}?action=validarQR&qr_id=${encodeURIComponent(qrData)}&t=${Date.now()}`;
@@ -160,3 +164,4 @@ document.getElementById("btnCancelar").onclick = async () => {
   localStorage.removeItem("scanner_modo");
   location.replace("index.html");
 };
+
