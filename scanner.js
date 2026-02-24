@@ -122,33 +122,29 @@ function procesarQR(qrData) {
         return;
       }
 
-      // Guardamos datos del empleado y rol
-      const rol = data.rol.trim().toLowerCase(); // limpiar espacios y minúsculas
-const recordar = localStorage.getItem("recordar_tmp");
+     // Guardamos datos del empleado y rol siempre
+const rol = data.rol.trim().toLowerCase(); // limpiar espacios y minúsculas
+localStorage.setItem("empleado_id", data.empleado_id);
+localStorage.setItem("rol", rol);
 
-if (recordar === "true") {
-  localStorage.setItem("empleado_id", data.empleado_id);
-  localStorage.setItem("rol", rol);
+// Limpiar tmp checkbox
+localStorage.removeItem("recordar_tmp");
+
+// Redirección según modo y rol
+if (SCANNER_MODO === "asistencia") {
+  location.replace("registrar.html");
+  return;
 }
 
-localStorage.removeItem("recordar_tmp");
-localStorage.removeItem("scanner_modo");
-
-      // Redirección según modo y rol
-      if (SCANNER_MODO === "asistencia") {
-        location.replace("registrar.html");
-        return;
-      }
-
-      if (SCANNER_MODO === "login") {
-        if (rol === "admin") {
-          location.replace("panel_admin.html");
-        } else if (rol === "empleado") {
-          location.replace("panel_empleado.html");
-        } else {
-          alert("Rol no reconocido");
-        }
-      }
+if (SCANNER_MODO === "login") {
+  if (rol === "admin") {
+    location.replace("panel_admin.html");
+  } else if (rol === "empleado") {
+    location.replace("panel_empleado.html");
+  } else {
+    alert("Rol no reconocido");
+  }
+}
     })
     .catch(err => {
       console.error(err);
@@ -169,5 +165,6 @@ document.getElementById("btnCancelar").onclick = async () => {
   localStorage.removeItem("scanner_modo");
   location.replace("index.html");
 };
+
 
 
