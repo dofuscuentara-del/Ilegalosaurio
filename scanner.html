@@ -32,19 +32,42 @@
       Cancelar
     </button>
     
-<div id="globalLoader" class="loader-overlay">
-  <div class="wheel-container">
-    
-    <div class="wheel">
-      <div class="wheel-inner"></div>
-    </div>
 
-    <div class="squirrel">
-      🐿️
+    <div id="globalLoader" class="loader-overlay">
+  <div class="wheel-container">
+
+    <div class="wheel"></div>
+
+    <div class="squirrel-wrapper">
+      <svg class="squirrel-svg" viewBox="0 0 200 200">
+
+        <!-- Cola -->
+        <circle cx="130" cy="70" r="35" fill="#8B5E3C" />
+
+        <!-- Cuerpo -->
+        <ellipse cx="100" cy="110" rx="35" ry="45" fill="#A47149"/>
+
+        <!-- Cabeza -->
+        <circle cx="85" cy="65" r="22" fill="#A47149"/>
+
+        <!-- Ojo -->
+        <circle cx="80" cy="60" r="4" fill="black"/>
+
+        <!-- Oreja -->
+        <circle cx="70" cy="45" r="10" fill="#8B5E3C"/>
+
+        <!-- Patas delanteras -->
+        <rect class="leg front-leg" x="95" y="120" width="8" height="30" fill="#6B4226"/>
+
+        <!-- Patas traseras -->
+        <rect class="leg back-leg" x="115" y="120" width="8" height="30" fill="#6B4226"/>
+
+      </svg>
     </div>
 
   </div>
-  <p class="loading-text">Cargando...</p>
+
+  <p class="loading-text">Cargando ....</p>
 </div>
 
   </main>
@@ -61,3 +84,4 @@
 </body>
 </html>
  
+
