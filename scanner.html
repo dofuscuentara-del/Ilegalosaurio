@@ -32,50 +32,23 @@
       Cancelar
     </button>
     
-<div id="globalLoader" class="loader-overlay">
-  <div class="wheel-scene">
-
-    <div class="wheel">
-      <div class="wheel-shine"></div>
+<!-- Overlay Cargando -->
+<div id="loading-overlay">
+  <div class="wheel-container">
+    <!-- Rueda -->
+    <div class="wheel"></div>
+    <!-- Dinosaurio -->
+    <div class="dino-container">
+      <div class="dino-body">
+        <div class="front-leg"></div>
+        <div class="back-leg"></div>
+        <div class="tail"></div>
+        <!-- Logo Dino -->
+        <img src="DinoHD4KFondo1.png" alt="Logo Dino" class="dino-logo">
+      </div>
     </div>
-
-    <div class="speed-lines"></div>
-
-    <div class="squirrel-wrapper">
-      <svg class="squirrel-svg" viewBox="0 0 200 200">
-
-        <!-- Cola -->
-        <circle cx="130" cy="70" r="35" fill="#8B5E3C"/>
-
-        <!-- Cuerpo -->
-        <ellipse cx="100" cy="110" rx="35" ry="45" fill="#A47149"/>
-
-        <!-- Logo Dino centrado -->
-        <image href="DinoHD4KFondo1.png"
-               x="75"
-               y="85"
-               width="50"
-               height="50"/>
-
-        <!-- Cabeza -->
-        <circle cx="85" cy="65" r="22" fill="#A47149"/>
-
-        <!-- Ojo -->
-        <circle cx="80" cy="60" r="4" fill="black"/>
-
-        <!-- Oreja -->
-        <circle cx="70" cy="45" r="10" fill="#8B5E3C"/>
-
-        <!-- Patas -->
-        <rect class="leg front-leg" x="95" y="120" width="8" height="30" fill="#6B4226"/>
-        <rect class="leg back-leg" x="115" y="120" width="8" height="30" fill="#6B4226"/>
-
-      </svg>
-    </div>
-
   </div>
-
-  <p class="loading-text">Cargando sistema...</p>
+  <div class="loading-text">Cargando ...</div>
 </div>
 
   </main>
@@ -92,6 +65,7 @@
 </body>
 </html>
  
+
 
 
 
