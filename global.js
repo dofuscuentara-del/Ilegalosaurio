@@ -10,7 +10,7 @@ function hideLoading() {
   if (overlay) overlay.style.display = "none";
 }
 
-// Mostrar overlay al abrir página
+// Mostrar overlay al abrir página y ocultar rápido
 window.addEventListener("load", () => {
   showLoading();
   setTimeout(() => hideLoading(), 500); // 0.5s
@@ -23,3 +23,16 @@ document.querySelectorAll("button").forEach(btn => {
   });
 });
 
+// Interceptar fetch globalmente para mostrar overlay automáticamente
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  showLoading();
+  try {
+    const res = await originalFetch(...args);
+    hideLoading();
+    return res;
+  } catch (err) {
+    hideLoading();
+    throw err;
+  }
+});
