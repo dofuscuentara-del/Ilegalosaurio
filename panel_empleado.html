@@ -96,6 +96,26 @@
     hidden
   >
 
+    <!-- =========================
+       MODAL AVATARES
+  ========================== -->
+  <div id="modalAvatares" class="modal" style="display:none;">
+    <div class="modal-content">
+
+      <h3>Selecciona una imagen</h3>
+
+      <div class="tabs-avatar">
+        <button id="tabMasculino" class="tab-activa">Masculino</button>
+        <button id="tabFemenino">Femenino</button>
+      </div>
+
+      <div id="gridAvatares" class="grid-avatares"></div>
+
+      <button id="btnCerrarAvatar">Cerrar</button>
+
+    </div>
+  </div>
+
   <!-- Overlay de carga simple -->
 <div id="loading-overlay">
   <div class="loader-container">
@@ -117,6 +137,7 @@ if ('serviceWorker' in navigator) {
   <script src="panel_empleado.js"></script>
 </body>
 </html>
+
 
 
 
