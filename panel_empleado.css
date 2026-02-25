@@ -176,3 +176,63 @@ body {
   width: 100%;
   margin-top: 8px;
 }
+
+/* Overlay full-screen */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none; /* inicialmente oculto */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Contenedor del logo y círculo */
+.loader-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+/* Logo centrado */
+.loader-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+/* Círculo girando alrededor */
+.loader-circle {
+  width: 120px;
+  height: 120px;
+  border: 6px solid #ffffff66;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Animación de giro */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Texto cargando */
+.loading-text {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 1px;
+}
