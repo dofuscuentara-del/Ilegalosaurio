@@ -97,8 +97,8 @@ body {
 .loader-overlay {
   position: fixed;
   inset: 0;
-  backdrop-filter: blur(8px);
-  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.7);
   display: none;
   flex-direction: column;
   justify-content: center;
@@ -111,48 +111,58 @@ body {
 /* ===== CONTENEDOR ===== */
 .wheel-container {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   margin-bottom: 25px;
 }
 
 /* ===== RUEDA 3D ===== */
 .wheel {
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
-  border: 10px solid #d1d5db;
+  border: 12px solid #cbd5e1;
   box-shadow:
-    inset 0 0 20px rgba(0,0,0,0.4),
-    0 10px 30px rgba(0,0,0,0.6);
-  animation: spinWheel 1.2s linear infinite;
+    inset 0 0 25px rgba(0,0,0,0.5),
+    0 15px 40px rgba(0,0,0,0.7);
+  animation: spinWheel 1.1s linear infinite;
   position: absolute;
 }
 
-.wheel-inner {
+/* ===== ARDILLA WRAPPER ===== */
+.squirrel-wrapper {
   position: absolute;
-  inset: 20px;
-  border-radius: 50%;
-  border: 4px dashed rgba(255,255,255,0.3);
-}
-
-/* ===== ARDILLA ===== */
-.squirrel {
-  position: absolute;
-  font-size: 48px;
   top: 50%;
   left: 50%;
   transform-origin: center;
-  animation: runCircle 1.2s linear infinite;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+  animation: runCircle 1.1s linear infinite;
+}
+
+/* ===== SVG ===== */
+.squirrel-svg {
+  width: 120px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6));
+}
+
+/* ===== ANIMACIÓN PATAS ===== */
+.leg {
+  transform-origin: top center;
+}
+
+.front-leg {
+  animation: legMove 0.25s infinite alternate ease-in-out;
+}
+
+.back-leg {
+  animation: legMove 0.25s infinite alternate-reverse ease-in-out;
 }
 
 /* ===== TEXTO ===== */
 .loading-text {
   font-size: 18px;
   letter-spacing: 1px;
-  opacity: 0.9;
-  animation: pulseText 1.5s infinite;
+  animation: pulse 1.5s infinite;
 }
 
 /* ===== ANIMACIONES ===== */
@@ -163,16 +173,21 @@ body {
 }
 
 @keyframes runCircle {
-  0%   { transform: rotate(0deg) translate(70px) rotate(0deg); }
-  100% { transform: rotate(360deg) translate(70px) rotate(-360deg); }
+  0%   { transform: rotate(0deg) translate(90px) rotate(0deg); }
+  100% { transform: rotate(360deg) translate(90px) rotate(-360deg); }
+}
+
+@keyframes legMove {
+  from { transform: rotate(-20deg); }
+  to { transform: rotate(20deg); }
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-@keyframes pulseText {
-  0%,100% { opacity: 0.6; }
-  50% { opacity: 1; }
 }
