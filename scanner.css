@@ -93,55 +93,86 @@ body {
   background-color: #c0392b;
 }
 
+/* ===== OVERLAY ===== */
 .loader-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.55);
   display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 99999;
   color: white;
-  font-size: 18px;
-  font-weight: bold;
+  animation: fadeIn 0.3s ease;
 }
 
-/* RUEDA */
-.hamster-wheel {
+/* ===== CONTENEDOR ===== */
+.wheel-container {
   position: relative;
-  width: 150px;
-  height: 150px;
-  margin-bottom: 20px;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 25px;
 }
 
-.wheel-ring {
-  width: 150px;
-  height: 150px;
-  border: 8px solid #ccc;
+/* ===== RUEDA 3D ===== */
+.wheel {
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
+  border: 10px solid #d1d5db;
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,0.4),
+    0 10px 30px rgba(0,0,0,0.6);
+  animation: spinWheel 1.2s linear infinite;
   position: absolute;
-  animation: spinWheel 1s linear infinite;
 }
 
-/* ARDILLA */
-.squirrel-run {
+.wheel-inner {
   position: absolute;
-  font-size: 40px;
+  inset: 20px;
+  border-radius: 50%;
+  border: 4px dashed rgba(255,255,255,0.3);
+}
+
+/* ===== ARDILLA ===== */
+.squirrel {
+  position: absolute;
+  font-size: 48px;
   top: 50%;
   left: 50%;
   transform-origin: center;
-  animation: runCircle 1s linear infinite;
+  animation: runCircle 1.2s linear infinite;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
 }
 
-/* ANIMACIÓN DE LA RUEDA */
+/* ===== TEXTO ===== */
+.loading-text {
+  font-size: 18px;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  animation: pulseText 1.5s infinite;
+}
+
+/* ===== ANIMACIONES ===== */
+
 @keyframes spinWheel {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* ARDILLA CORRIENDO DENTRO */
 @keyframes runCircle {
-  0%   { transform: rotate(0deg) translate(55px) rotate(0deg); }
-  100% { transform: rotate(360deg) translate(55px) rotate(-360deg); }
+  0%   { transform: rotate(0deg) translate(70px) rotate(0deg); }
+  100% { transform: rotate(360deg) translate(70px) rotate(-360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulseText {
+  0%,100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
