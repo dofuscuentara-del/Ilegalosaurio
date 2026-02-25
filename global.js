@@ -1,33 +1,20 @@
-// ===== LOADER GLOBAL =====
-
-function showLoader() {
-  const loader = document.getElementById("globalLoader");
-  if (loader) loader.style.display = "flex";
+// Mostrar overlay de carga
+function showLoading() {
+  const overlay = document.getElementById("loading-overlay");
+  if (overlay) overlay.style.display = "flex";
 }
 
-function hideLoader() {
-  const loader = document.getElementById("globalLoader");
-  if (loader) loader.style.display = "none";
+// Ocultar overlay
+function hideLoading() {
+  const overlay = document.getElementById("loading-overlay");
+  if (overlay) overlay.style.display = "none";
 }
 
-// ===== INTERCEPTAR TODOS LOS FETCH =====
-const originalFetch = window.fetch;
-
-window.fetch = async function () {
-  showLoader();
-  try {
-    const response = await originalFetch.apply(this, arguments);
-    return response;
-  } finally {
-    hideLoader();
-  }
-};
-
-// ===== MOSTRAR LOADER AL CAMBIAR DE PÁGINA =====
-document.addEventListener("click", function (e) {
-  const target = e.target.closest("button, a");
-  if (target) {
-    showLoader();
-  }
+// Aplicar a todos los botones
+document.querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    showLoading();
+    // Opcional: ocultar automáticamente después de X ms
+    // setTimeout(() => hideLoading(), 3000);
+  });
 });
- 
