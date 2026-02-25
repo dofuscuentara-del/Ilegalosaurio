@@ -101,25 +101,29 @@ body {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.55);
-  display: flex;
+  display: none; /* inicialmente oculto */
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 
-/* Rueda */
+/* Contenedor rueda */
 .wheel-container {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
 }
 
+/* Rueda girando de fondo */
 .wheel {
   width: 100%;
   height: 100%;
-  border: 10px solid #cfd8dc;
+  border: 12px solid #cfd8dc;
   border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
   animation: spinWheel 2s linear infinite;
 }
 
@@ -128,7 +132,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Dinosaurio dentro de la rueda */
+/* Dinosaurio corriendo (no gira con la rueda) */
 .dino-container {
   position: absolute;
   top: 0;
@@ -144,17 +148,18 @@ body {
   position: relative;
   width: 60px;
   height: 60px;
-  transform-origin: center;
   animation: bodyRun 0.6s infinite ease-in-out;
+  transform-origin: center center;
 }
 
+/* Movimiento suave cuerpo */
 @keyframes bodyRun {
-  0%   { transform: rotate(-2deg) translateY(0px); }
-  50%  { transform: rotate(2deg) translateY(-2px); }
-  100% { transform: rotate(-2deg) translateY(0px); }
+  0% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-2px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(-2deg); }
 }
 
-/* Patas */
+/* Patas del dino */
 .front-leg, .back-leg {
   position: absolute;
   width: 12px;
@@ -181,7 +186,7 @@ body {
   to { transform: rotate(18deg); }
 }
 
-/* Cola */
+/* Cola del dino */
 .tail {
   position: absolute;
   width: 12px;
@@ -195,12 +200,12 @@ body {
 }
 
 @keyframes tailMove {
-  0%   { transform: rotate(-3deg); }
-  50%  { transform: rotate(3deg); }
+  0% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
   100% { transform: rotate(-3deg); }
 }
 
-/* Logo Dino */
+/* Logo Dino centrado */
 .dino-logo {
   position: absolute;
   top: -15px;
@@ -218,6 +223,3 @@ body {
   color: #fff;
   letter-spacing: 1px;
 }
-  to { opacity: 1; }
-}
-
