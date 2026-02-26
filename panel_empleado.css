@@ -236,3 +236,30 @@ body {
   color: #fff;
   letter-spacing: 1px;
 }
+
+/* =========================
+   AVATARES PANEL EMPLEADO
+========================= */
+#gridAvatares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-height: 400px; /* evita que el modal crezca demasiado */
+  overflow-y: auto;  /* agrega scroll si hay muchos avatares */
+  padding: 10px;
+}
+
+.avatar-item {
+  width: 80px;
+  height: 80px;
+  object-fit: cover; /* mantiene proporción y recorta si es necesario */
+  cursor: pointer;
+  border-radius: 50%; /* opcional: estilo circular */
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+
+.avatar-item:hover {
+  border: 2px solid #4CAF50; /* resalta al pasar mouse */
+}
