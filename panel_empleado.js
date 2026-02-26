@@ -83,16 +83,14 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  // Limpiar la grilla
-  gridAvatares.innerHTML = '';
+  // Mostrar loader
+  gridAvatares.innerHTML = `<div style="text-align:center; width:100%; padding:50px 0;">Cargando avatares...</div>`;
 
-  // Asegurarse de que el contenedor sea visible
-  gridAvatares.style.display = 'flex';
-  gridAvatares.style.flexWrap = 'wrap';
-  gridAvatares.style.justifyContent = 'center';
-  gridAvatares.style.gap = '10px';
+  const total = 10;
+  let cargadas = 0;
+  const fragment = document.createDocumentFragment();
 
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= total; i++) {
     const img = document.createElement('img');
     const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
 
@@ -101,10 +99,16 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
-    // Debug si la imagen no carga
-    img.onerror = () => console.warn(`No se pudo cargar la imagen ${avatarNombre}`);
+    // Cuando la imagen termine de cargar o falle
+    img.onload = img.onerror = () => {
+      cargadas++;
+      if (cargadas === total) {
+        // Todas las imágenes ya cargaron, quitar loader y mostrar imágenes
+        gridAvatares.innerHTML = '';
+        gridAvatares.appendChild(fragment);
+      }
+    };
 
-    // Click para seleccionar avatar
     img.addEventListener('click', async () => {
       try {
         const res = await fetch(API_URL, {
@@ -133,8 +137,7 @@ function generarAvatares(genero) {
       }
     });
 
-    // Añadir la imagen a la grilla
-    gridAvatares.appendChild(img);
+    fragment.appendChild(img);
   }
 }
 
@@ -244,3 +247,4 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
