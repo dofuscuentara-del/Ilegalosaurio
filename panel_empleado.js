@@ -1,4 +1,3 @@
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const empleado_id = localStorage.getItem('empleado_id');
@@ -86,50 +85,64 @@ async function cargarPanel() {
 function generarAvatares(genero) {
   mostrarLoaderAvatares(true);
 
-  // Pequeño timeout para simular carga y permitir ver el loader
-  setTimeout(() => {
-    mostrarLoaderAvatares(false);
+  gridAvatares.innerHTML = ''; // Reiniciamos para el loader
 
-    for (let i = 1; i <= 10; i++) {
-      const img = document.createElement('img');
-      const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
-      
-      img.src = avatarNombre;
-      img.classList.add('avatar-item');
-      img.width = 80;
-      img.height = 80;
+  let cargadas = 0;
+  const total = 10;
 
+  for (let i = 1; i <= total; i++) {
+    const img = document.createElement('img');
+    const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
+    
+    img.src = avatarNombre;
+    img.classList.add('avatar-item');
+    img.width = 80;
+    img.height = 80;
+
+    img.onload = () => {
       gridAvatares.appendChild(img);
+      cargadas++;
+      if (cargadas === total) {
+        mostrarLoaderAvatares(false); // Ocultar loader cuando todas carguen
+      }
+    };
 
-      img.addEventListener('click', async () => {
-        try {
-          const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'subirFotoPerfil',
-              empleado_id,
-              tipo: 'empleado',
-              avatarNombre: avatarNombre
-            })
-          });
-          const data = await res.json();
+    img.onerror = () => {
+      console.warn(`No se pudo cargar la imagen ${avatarNombre}`);
+      cargadas++;
+      if (cargadas === total) {
+        mostrarLoaderAvatares(false);
+      }
+    };
 
-          if (!data.ok) {
-            alert('Error al guardar foto');
-            return;
-          }
+    img.addEventListener('click', async () => {
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'subirFotoPerfil',
+            empleado_id,
+            tipo: 'empleado',
+            avatarNombre: avatarNombre
+          })
+        });
+        const data = await res.json();
 
-          fotoPerfilEl.src = avatarNombre;
-          localStorage.setItem('foto_perfil', avatarNombre);
-          modalAvatares.style.display = 'none';
-        } catch (err) {
-          console.error(err);
+        if (!data.ok) {
           alert('Error al guardar foto');
+          return;
         }
-      });
-    }
-  }, 200); // 200ms para que se vea el loader
+
+        fotoPerfilEl.src = avatarNombre;
+        localStorage.setItem('foto_perfil', avatarNombre);
+        modalAvatares.style.display = 'none';
+      } catch (err) {
+        console.error(err);
+        alert('Error al guardar foto');
+      }
+    });
+  }
 }
 
 function renderEstado(estado) {
