@@ -83,7 +83,7 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  // Mostrar loader
+  // Mostrar loader cada vez que se genera la grilla
   gridAvatares.innerHTML = `<div style="text-align:center; width:100%; padding:50px 0;">Cargando avatares...</div>`;
 
   const total = 10;
@@ -103,12 +103,13 @@ function generarAvatares(genero) {
     img.onload = img.onerror = () => {
       cargadas++;
       if (cargadas === total) {
-        // Todas las imágenes ya cargaron, quitar loader y mostrar imágenes
+        // Todas las imágenes cargaron, quitar loader y mostrar imágenes
         gridAvatares.innerHTML = '';
         gridAvatares.appendChild(fragment);
       }
     };
 
+    // Click para seleccionar avatar
     img.addEventListener('click', async () => {
       try {
         const res = await fetch(API_URL, {
@@ -247,4 +248,5 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
