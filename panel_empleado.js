@@ -34,23 +34,118 @@ const btnCalcular = document.getElementById('btnCalcular');
 const btnCerrarCalc = document.getElementById('btnCerrarCalc');
 
 /* =========================
-   CARGAR PANEL
+   MODAL AVATARES
 ========================= */
-cargarPanel();
-
-
-/* =========================
-   AVATARES MASCULINO / FEMENINO
-========================= */
-
 const modalAvatares = document.getElementById('modalAvatares');
 const gridAvatares = document.getElementById('gridAvatares');
 const btnCerrarAvatar = document.getElementById('btnCerrarAvatar');
 const tabMasculino = document.getElementById('tabMasculino');
 const tabFemenino = document.getElementById('tabFemenino');
-
 let generoActivo = 'masculino';
 
+/* =========================
+   FUNCIONES
+========================= */
+async function cargarPanel() {
+  try {
+    const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert('No se pudo cargar el panel');
+      return;
+    }
+
+    // Manejo seguro si resumen no existe
+    renderEstado(data.estado.estado); // Estado DENTRO/FUERA
+    renderHistorial(data.resumen?.dias || []);
+    horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
+
+    // Actualizar foto y nombre del empleado
+    if (data.estado.foto_url) {
+      fotoPerfilEl.src = data.estado.foto_url;
+      localStorage.setItem('foto_perfil', data.estado.foto_url);
+    }
+    document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
+  } catch (err) {
+    console.error(err);
+    alert('Error al cargar datos');
+  }
+}
+
+function generarAvatares(genero) {
+  gridAvatares.innerHTML = '';
+
+  for (let i = 1; i <= 10; i++) {
+    const img = document.createElement('img');
+    const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
+    img.src = avatarNombre;   // ← SIN carpeta
+    img.classList.add('avatar-item');
+
+    img.addEventListener('click', async () => {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'subirFotoPerfil',
+          empleado_id,
+          tipo: 'empleado',
+          avatarNombre: avatarNombre
+        })
+      });
+
+      const data = await res.json();
+
+      if (!data.ok) {
+        alert('Error al guardar foto');
+        return;
+      }
+
+      fotoPerfilEl.src = avatarNombre;  // ← mostrar directo
+      localStorage.setItem('foto_perfil', avatarNombre);
+
+      modalAvatares.style.display = 'none';
+    });
+
+    gridAvatares.appendChild(img);
+  }
+}
+
+function renderEstado(estado) {
+  estadoEl.textContent = `Estado: ${estado}`;
+}
+
+function renderHistorial(dias) {
+  listaDiasEl.innerHTML = '';
+  dias.forEach(d => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${d.fecha}</span><span>${d.horas} h</span>`;
+    listaDiasEl.appendChild(li);
+  });
+}
+
+async function marcar(tipo) {
+  try {
+    const url = `${API_URL}?action=${tipo}&empleado_id=${encodeURIComponent(empleado_id)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert(data.error || 'Error al registrar');
+      return;
+    }
+
+    cargarPanel();
+  } catch (err) {
+    console.error(err);
+    alert('Error de conexión');
+  }
+}
+
+/* =========================
+   EVENTOS
+========================= */
 btnCambiarFoto.addEventListener('click', () => {
   modalAvatares.style.display = 'flex';
   generarAvatares(generoActivo);
@@ -74,106 +169,9 @@ tabFemenino.addEventListener('click', () => {
   generarAvatares('femenino');
 });
 
-function generarAvatares(genero) {
-  gridAvatares.innerHTML = '';
-
-for (let i = 1; i <= 10; i++) {
-
-  const img = document.createElement('img');
-
-  const avatarNombre = genero === 'masculino'
-    ? `m${i}.png`
-    : `f${i}.png`;
-
-  img.src = avatarNombre;   // ← SIN carpeta
-  img.classList.add('avatar-item');
-
-  img.addEventListener('click', async () => {
-
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'subirFotoPerfil',
-        empleado_id,
-        tipo: 'empleado',
-        avatarNombre: avatarNombre   // ← enviamos SOLO el nombre
-      })
-    });
-
-    const data = await res.json();
-
-    if (!data.ok) {
-      alert('Error al guardar foto');
-      return;
-    }
-
-    fotoPerfilEl.src = avatarNombre;  // ← mostrar directo
-    localStorage.setItem('foto_perfil', avatarNombre);
-
-    modalAvatares.style.display = 'none';
-  });
-
-  gridAvatares.appendChild(img);
-}
-
-async function cargarPanel() {
-  try {
-    const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!data.ok) {
-      alert('No se pudo cargar el panel');
-      return;
-    }
-
-    // Manejo seguro si resumen no existe
-    renderEstado(data.estado.estado); // Estado DENTRO/FUERA
-    renderHistorial(data.resumen?.dias || []);
-    horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
-
-    // Actualizar foto y nombre del empleado
-    if (data.estado.foto_url) {
-      fotoPerfilEl.src = data.estado.foto_url;
-      localStorage.setItem('foto_perfil', data.estado.foto_url);
-    }
-    document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
-
-  } catch (err) {
-    console.error(err);
-    alert('Error al cargar datos');
-  }
-}
-
-/* =========================
-   ENTRADA / SALIDA
-========================= */
 btnEntrada.addEventListener('click', () => marcar('entrada'));
 btnSalida.addEventListener('click', () => marcar('salida'));
 
-async function marcar(tipo) {
-  try {
-    const url = `${API_URL}?action=${tipo}&empleado_id=${encodeURIComponent(empleado_id)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!data.ok) {
-      alert(data.error || 'Error al registrar');
-      return;
-    }
-
-    cargarPanel();
-
-  } catch (err) {
-    console.error(err);
-    alert('Error de conexión');
-  }
-}
-
-/* =========================
-   CALCULADORA PRO (MODAL)
-========================= */
 btnCalculadora.addEventListener('click', () => {
   resultadoCalcEl.textContent = 'Horas: 0 | Total: $0';
   modalCalc.style.display = 'flex';
@@ -205,40 +203,18 @@ btnCalcular.addEventListener('click', async () => {
 
     const total = data.total_horas * sueldo;
     resultadoCalcEl.textContent = `Horas: ${data.total_horas} | Total: $${total.toFixed(2)}`;
-
   } catch (err) {
     console.error(err);
     alert('Error en calculadora');
   }
 });
 
-/* =========================
-   SALIR
-========================= */
 btnSalir.addEventListener('click', () => {
   localStorage.clear();
   window.location.href = 'index.html';
 });
 
 /* =========================
-   RENDER
+   INICIO
 ========================= */
-function renderEstado(estado) {
-  estadoEl.textContent = `Estado: ${estado}`;
-}
-
-function renderHistorial(dias) {
-  listaDiasEl.innerHTML = '';
-
-  dias.forEach(d => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${d.fecha}</span><span>${d.horas} h</span>`;
-    listaDiasEl.appendChild(li);
-  });
-}
-
-
-
-
-
-
+cargarPanel();
