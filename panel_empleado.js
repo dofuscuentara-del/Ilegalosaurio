@@ -37,7 +37,7 @@ const btnCerrarCalc = document.getElementById('btnCerrarCalc');
    CARGAR PANEL
 ========================= */
 cargarPanel();
-cargarFotoLocal();
+
 
 /* =========================
    AVATARES MASCULINO / FEMENINO
@@ -236,6 +236,7 @@ function renderHistorial(dias) {
     listaDiasEl.appendChild(li);
   });
 }
+
 
 
 
