@@ -39,6 +39,92 @@ const btnCerrarCalc = document.getElementById('btnCerrarCalc');
 cargarPanel();
 cargarFotoLocal();
 
+/* =========================
+   AVATARES MASCULINO / FEMENINO
+========================= */
+
+const modalAvatares = document.getElementById('modalAvatares');
+const gridAvatares = document.getElementById('gridAvatares');
+const btnCerrarAvatar = document.getElementById('btnCerrarAvatar');
+const tabMasculino = document.getElementById('tabMasculino');
+const tabFemenino = document.getElementById('tabFemenino');
+
+let generoActivo = 'masculino';
+
+btnCambiarFoto.addEventListener('click', () => {
+  modalAvatares.style.display = 'flex';
+  generarAvatares(generoActivo);
+});
+
+btnCerrarAvatar.addEventListener('click', () => {
+  modalAvatares.style.display = 'none';
+});
+
+tabMasculino.addEventListener('click', () => {
+  generoActivo = 'masculino';
+  tabMasculino.classList.add('tab-activa');
+  tabFemenino.classList.remove('tab-activa');
+  generarAvatares('masculino');
+});
+
+tabFemenino.addEventListener('click', () => {
+  generoActivo = 'femenino';
+  tabFemenino.classList.add('tab-activa');
+  tabMasculino.classList.remove('tab-activa');
+  generarAvatares('femenino');
+});
+
+function generarAvatares(genero) {
+
+  gridAvatares.innerHTML = '';
+
+  for (let i = 1; i <= 10; i++) {
+
+    const img = document.createElement('img');
+
+    img.src = genero === 'masculino'
+      ? `img/avatares/masculino/m${i}.png`
+      : `img/avatares/femenino/f${i}.png`;
+
+    img.classList.add('avatar-item');
+
+    img.addEventListener('click', async () => {
+
+      try {
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'actualizarFotoPerfil',
+            empleado_id,
+            foto_url: img.src
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+          alert('Error al guardar foto');
+          return;
+        }
+
+        fotoPerfilEl.src = img.src;
+        localStorage.setItem('foto_perfil', img.src);
+
+        modalAvatares.style.display = 'none';
+
+      } catch (err) {
+        console.error(err);
+        alert('Error al guardar foto');
+      }
+
+    });
+
+    gridAvatares.appendChild(img);
+  }
+}
+
 async function cargarPanel() {
   try {
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
@@ -65,55 +151,6 @@ async function cargarPanel() {
   } catch (err) {
     console.error(err);
     alert('Error al cargar datos');
-  }
-}
-
-/* =========================
-   FOTO PERFIL
-========================= */
-btnCambiarFoto.addEventListener('click', () => inputFoto.click());
-
-inputFoto.addEventListener('change', () => {
-  const file = inputFoto.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      // Usar POST para subir la foto
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'subirFotoPerfil',
-          empleado_id,
-          tipo: 'empleado',
-          base64: reader.result
-        })
-      });
-
-      const data = await res.json();
-      if (!data.ok) {
-        alert('Error al subir foto');
-        return;
-      }
-
-      fotoPerfilEl.src = data.foto_url;
-      localStorage.setItem('foto_perfil', data.foto_url);
-
-    } catch (err) {
-      console.error(err);
-      alert('Error al subir foto');
-    }
-  };
-
-  reader.readAsDataURL(file);
-});
-
-function cargarFotoLocal() {
-  const foto = localStorage.getItem('foto_perfil');
-  if (foto) {
-    fotoPerfilEl.src = foto;
   }
 }
 
@@ -207,3 +244,4 @@ function renderHistorial(dias) {
     listaDiasEl.appendChild(li);
   });
 }
+
