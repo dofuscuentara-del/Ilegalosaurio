@@ -84,36 +84,27 @@ async function cargarPanel() {
 
 function generarAvatares(genero) {
   mostrarLoaderAvatares(true);
+  gridAvatares.innerHTML = '';
 
-  gridAvatares.innerHTML = ''; // Reiniciamos para el loader
+  const promesas = []; // Array para esperar todas las imágenes
 
-  let cargadas = 0;
-  const total = 10;
-
-  for (let i = 1; i <= total; i++) {
+  for (let i = 1; i <= 10; i++) {
     const img = document.createElement('img');
     const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
-    
+
     img.src = avatarNombre;
     img.classList.add('avatar-item');
     img.width = 80;
     img.height = 80;
 
-    img.onload = () => {
-      gridAvatares.appendChild(img);
-      cargadas++;
-      if (cargadas === total) {
-        mostrarLoaderAvatares(false); // Ocultar loader cuando todas carguen
-      }
-    };
+    // Creamos una promesa para cada imagen
+    const promesaImg = new Promise((resolve) => {
+      img.onload = () => resolve();
+      img.onerror = () => resolve(); // incluso si falla, seguimos contando
+    });
 
-    img.onerror = () => {
-      console.warn(`No se pudo cargar la imagen ${avatarNombre}`);
-      cargadas++;
-      if (cargadas === total) {
-        mostrarLoaderAvatares(false);
-      }
-    };
+    promesas.push(promesaImg);
+    gridAvatares.appendChild(img);
 
     img.addEventListener('click', async () => {
       try {
@@ -143,7 +134,13 @@ function generarAvatares(genero) {
       }
     });
   }
+
+  // Esperamos a que todas las imágenes carguen o fallen
+  Promise.all(promesas).then(() => {
+    mostrarLoaderAvatares(false);
+  });
 }
+
 
 function renderEstado(estado) {
   estadoEl.textContent = `Estado: ${estado}`;
@@ -251,3 +248,4 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
