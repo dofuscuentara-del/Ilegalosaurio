@@ -83,10 +83,10 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  mostrarLoaderAvatares(true);
-  gridAvatares.innerHTML = '';
+  mostrarLoaderAvatares(true); // Mostrar loader
+  gridAvatares.innerHTML = '';  // Limpiar grilla antes de cargar
 
-  const promesas = []; // Array para esperar todas las imágenes
+  const promesas = [];
 
   for (let i = 1; i <= 10; i++) {
     const img = document.createElement('img');
@@ -97,10 +97,9 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
-    // Creamos una promesa para cada imagen
     const promesaImg = new Promise((resolve) => {
       img.onload = () => resolve();
-      img.onerror = () => resolve(); // incluso si falla, seguimos contando
+      img.onerror = () => resolve(); // aunque falle, se considera "cargada"
     });
 
     promesas.push(promesaImg);
@@ -135,7 +134,7 @@ function generarAvatares(genero) {
     });
   }
 
-  // Esperamos a que todas las imágenes carguen o fallen
+  // Espera a que todas las imágenes carguen antes de quitar el loader
   Promise.all(promesas).then(() => {
     mostrarLoaderAvatares(false);
   });
@@ -248,4 +247,5 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
