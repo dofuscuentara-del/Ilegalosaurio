@@ -75,32 +75,31 @@ tabFemenino.addEventListener('click', () => {
 });
 
 function generarAvatares(genero) {
-
   gridAvatares.innerHTML = '';
 
   for (let i = 1; i <= 10; i++) {
-
     const img = document.createElement('img');
 
+    // Asignamos correctamente la ruta según el género
     img.src = genero === 'masculino'
-  ? `m${i}.png`
-  : `f${i}.png`;
+      ? `m${i}.png`
+      : `f${i}.png`;
 
+    const avatarNombre = img.src; // guardamos el nombre local para enviar al server
+    
     img.classList.add('avatar-item');
 
     img.addEventListener('click', async () => {
-
       try {
-
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({
-  action: 'subirFotoPerfil',
-  empleado_id,
-  tipo: 'empleado',
-  base64: '' // dejamos vacío porque ya usamos URL local
-})
+          body: JSON.stringify({
+            action: 'subirFotoPerfil',
+            empleado_id,
+            tipo: 'empleado',
+            avatarNombre // enviamos el nombre local al GAS
+          })
         });
 
         const data = await res.json();
@@ -110,8 +109,8 @@ function generarAvatares(genero) {
           return;
         }
 
-        fotoPerfilEl.src = img.src;
-        localStorage.setItem('foto_perfil', img.src);
+        fotoPerfilEl.src = avatarNombre; // mostramos la imagen local directamente
+        localStorage.setItem('foto_perfil', avatarNombre);
 
         modalAvatares.style.display = 'none';
 
@@ -119,7 +118,6 @@ function generarAvatares(genero) {
         console.error(err);
         alert('Error al guardar foto');
       }
-
     });
 
     gridAvatares.appendChild(img);
@@ -245,5 +243,6 @@ function renderHistorial(dias) {
     listaDiasEl.appendChild(li);
   });
 }
+
 
 
