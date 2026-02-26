@@ -83,7 +83,7 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  // Limpiar grilla
+  // Limpiar la grilla cada vez que se abre modal
   gridAvatares.innerHTML = '';
 
   for (let i = 1; i <= 10; i++) {
@@ -95,7 +95,7 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
-    // Opcional: debug si no carga
+    // Debug si la imagen no carga
     img.onerror = () => console.warn(`No se pudo cargar la imagen ${avatarNombre}`);
 
     // Click para seleccionar avatar
@@ -127,7 +127,8 @@ function generarAvatares(genero) {
       }
     });
 
-    gridAvatares.appendChild(img); // agregar inmediatamente
+    // Añadir la imagen a la grilla
+    gridAvatares.appendChild(img);
   }
 }
 
@@ -237,6 +238,7 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
 
