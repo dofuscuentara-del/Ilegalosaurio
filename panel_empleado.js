@@ -44,6 +44,17 @@ const tabFemenino = document.getElementById('tabFemenino');
 let generoActivo = 'masculino';
 
 /* =========================
+   LOADER AVATARES
+========================= */
+function mostrarLoaderAvatares(show) {
+  if (show) {
+    gridAvatares.innerHTML = `<div style="text-align:center; width:100%; padding:50px 0;">Cargando avatares...</div>`;
+  } else {
+    gridAvatares.innerHTML = '';
+  }
+}
+
+/* =========================
    FUNCIONES
 ========================= */
 async function cargarPanel() {
@@ -57,12 +68,10 @@ async function cargarPanel() {
       return;
     }
 
-    // Manejo seguro si resumen no existe
-    renderEstado(data.estado.estado); // Estado DENTRO/FUERA
+    renderEstado(data.estado.estado);
     renderHistorial(data.resumen?.dias || []);
     horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
 
-    // Actualizar foto y nombre del empleado
     if (data.estado.foto_url) {
       fotoPerfilEl.src = data.estado.foto_url;
       localStorage.setItem('foto_perfil', data.estado.foto_url);
@@ -75,41 +84,52 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  gridAvatares.innerHTML = '';
+  mostrarLoaderAvatares(true);
 
-  for (let i = 1; i <= 10; i++) {
-    const img = document.createElement('img');
-    const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
-    img.src = avatarNombre;   // ← SIN carpeta
-    img.classList.add('avatar-item');
+  // Pequeño timeout para simular carga y permitir ver el loader
+  setTimeout(() => {
+    mostrarLoaderAvatares(false);
 
-    img.addEventListener('click', async () => {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'subirFotoPerfil',
-          empleado_id,
-          tipo: 'empleado',
-          avatarNombre: avatarNombre
-        })
+    for (let i = 1; i <= 10; i++) {
+      const img = document.createElement('img');
+      const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
+      
+      img.src = avatarNombre;
+      img.classList.add('avatar-item');
+      img.width = 80;
+      img.height = 80;
+
+      gridAvatares.appendChild(img);
+
+      img.addEventListener('click', async () => {
+        try {
+          const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'subirFotoPerfil',
+              empleado_id,
+              tipo: 'empleado',
+              avatarNombre: avatarNombre
+            })
+          });
+          const data = await res.json();
+
+          if (!data.ok) {
+            alert('Error al guardar foto');
+            return;
+          }
+
+          fotoPerfilEl.src = avatarNombre;
+          localStorage.setItem('foto_perfil', avatarNombre);
+          modalAvatares.style.display = 'none';
+        } catch (err) {
+          console.error(err);
+          alert('Error al guardar foto');
+        }
       });
-
-      const data = await res.json();
-
-      if (!data.ok) {
-        alert('Error al guardar foto');
-        return;
-      }
-
-      fotoPerfilEl.src = avatarNombre;  // ← mostrar directo
-      localStorage.setItem('foto_perfil', avatarNombre);
-
-      modalAvatares.style.display = 'none';
-    });
-
-    gridAvatares.appendChild(img);
-  }
+    }
+  }, 200); // 200ms para que se vea el loader
 }
 
 function renderEstado(estado) {
