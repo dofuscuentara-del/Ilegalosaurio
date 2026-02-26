@@ -77,52 +77,44 @@ tabFemenino.addEventListener('click', () => {
 function generarAvatares(genero) {
   gridAvatares.innerHTML = '';
 
-  for (let i = 1; i <= 10; i++) {
-    const img = document.createElement('img');
+for (let i = 1; i <= 10; i++) {
 
-    // Asignamos correctamente la ruta según el género
-    img.src = genero === 'masculino'
-      ? `m${i}.png`
-      : `f${i}.png`;
-    
-const avatarNombre = `${genero === 'masculino' ? 'm' : 'f'}${i}.png`;
-img.src = `avatares/${avatarNombre}`;
-    
-    img.classList.add('avatar-item');
+  const img = document.createElement('img');
 
-    img.addEventListener('click', async () => {
-      try {
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'subirFotoPerfil',
-            empleado_id,
-            tipo: 'empleado',
-            avatarNombre // enviamos el nombre local al GAS
-          })
-        });
+  const avatarNombre = genero === 'masculino'
+    ? `m${i}.png`
+    : `f${i}.png`;
 
-        const data = await res.json();
+  img.src = avatarNombre;   // ← SIN carpeta
+  img.classList.add('avatar-item');
 
-        if (!data.ok) {
-          alert('Error al guardar foto');
-          return;
-        }
+  img.addEventListener('click', async () => {
 
-        fotoPerfilEl.src = avatarNombre; // mostramos la imagen local directamente
-        localStorage.setItem('foto_perfil', avatarNombre);
-
-        modalAvatares.style.display = 'none';
-
-      } catch (err) {
-        console.error(err);
-        alert('Error al guardar foto');
-      }
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'subirFotoPerfil',
+        empleado_id,
+        tipo: 'empleado',
+        avatarNombre: avatarNombre   // ← enviamos SOLO el nombre
+      })
     });
 
-    gridAvatares.appendChild(img);
-  }
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert('Error al guardar foto');
+      return;
+    }
+
+    fotoPerfilEl.src = avatarNombre;  // ← mostrar directo
+    localStorage.setItem('foto_perfil', avatarNombre);
+
+    modalAvatares.style.display = 'none';
+  });
+
+  gridAvatares.appendChild(img);
 }
 
 async function cargarPanel() {
@@ -244,6 +236,7 @@ function renderHistorial(dias) {
     listaDiasEl.appendChild(li);
   });
 }
+
 
 
 
