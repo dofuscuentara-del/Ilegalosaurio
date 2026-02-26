@@ -83,8 +83,8 @@ function generarAvatares(genero) {
     const img = document.createElement('img');
 
     img.src = genero === 'masculino'
-      ? `img/avatares/masculino/m${i}.png`
-      : `img/avatares/femenino/f${i}.png`;
+  ? `m${i}.png`
+  : `f${i}.png`;
 
     img.classList.add('avatar-item');
 
@@ -95,11 +95,12 @@ function generarAvatares(genero) {
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'actualizarFotoPerfil',
-            empleado_id,
-            foto_url: img.src
-          })
+         body: JSON.stringify({
+  action: 'subirFotoPerfil',
+  empleado_id,
+  tipo: 'empleado',
+  base64: '' // dejamos vacío porque ya usamos URL local
+})
         });
 
         const data = await res.json();
@@ -244,4 +245,5 @@ function renderHistorial(dias) {
     listaDiasEl.appendChild(li);
   });
 }
+
 
