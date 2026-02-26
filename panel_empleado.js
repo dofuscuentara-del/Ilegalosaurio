@@ -84,8 +84,9 @@ function generarAvatares(genero) {
     img.src = genero === 'masculino'
       ? `m${i}.png`
       : `f${i}.png`;
-
-    const avatarNombre = img.src; // guardamos el nombre local para enviar al server
+    
+const avatarNombre = `${genero === 'masculino' ? 'm' : 'f'}${i}.png`;
+img.src = `avatares/${avatarNombre}`;
     
     img.classList.add('avatar-item');
 
@@ -243,6 +244,7 @@ function renderHistorial(dias) {
     listaDiasEl.appendChild(li);
   });
 }
+
 
 
 
