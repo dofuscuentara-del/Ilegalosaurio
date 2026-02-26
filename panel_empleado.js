@@ -83,33 +83,22 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  // Limpiar grilla y mostrar loader
+  // Limpiar grilla
   gridAvatares.innerHTML = '';
-  mostrarLoaderAvatares(true);
-
-  const promesas = [];
 
   for (let i = 1; i <= 10; i++) {
     const img = document.createElement('img');
     const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
 
-    img.src = avatarNombre;
+    img.src = avatarNombre;       // imagen local
     img.classList.add('avatar-item');
     img.width = 80;
     img.height = 80;
 
-    // Cada imagen agrega una promesa para saber cuándo termina de cargar
-    const promesaImg = new Promise((resolve) => {
-      img.onload = () => resolve();
-      img.onerror = () => {
-        console.warn(`No se pudo cargar la imagen ${avatarNombre}`);
-        resolve();
-      };
-    });
+    // Opcional: debug si no carga
+    img.onerror = () => console.warn(`No se pudo cargar la imagen ${avatarNombre}`);
 
-    promesas.push(promesaImg);
-    gridAvatares.appendChild(img);
-
+    // Click para seleccionar avatar
     img.addEventListener('click', async () => {
       try {
         const res = await fetch(API_URL, {
@@ -137,12 +126,9 @@ function generarAvatares(genero) {
         alert('Error al guardar foto');
       }
     });
-  }
 
-  // Ocultar loader solo cuando todas las imágenes estén cargadas o fallen
-  Promise.all(promesas).then(() => {
-    mostrarLoaderAvatares(false);
-  });
+    gridAvatares.appendChild(img); // agregar inmediatamente
+  }
 }
 
 function renderEstado(estado) {
@@ -251,6 +237,7 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
 
