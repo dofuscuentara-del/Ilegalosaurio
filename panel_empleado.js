@@ -83,14 +83,20 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
-  // Limpiar la grilla cada vez que se abre modal
+  // Limpiar la grilla
   gridAvatares.innerHTML = '';
+
+  // Asegurarse de que el contenedor sea visible
+  gridAvatares.style.display = 'flex';
+  gridAvatares.style.flexWrap = 'wrap';
+  gridAvatares.style.justifyContent = 'center';
+  gridAvatares.style.gap = '10px';
 
   for (let i = 1; i <= 10; i++) {
     const img = document.createElement('img');
     const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
 
-    img.src = avatarNombre;       // imagen local
+    img.src = avatarNombre;
     img.classList.add('avatar-item');
     img.width = 80;
     img.height = 80;
@@ -238,8 +244,3 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
-
-
-
-
-
