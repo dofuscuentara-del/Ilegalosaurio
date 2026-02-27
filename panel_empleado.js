@@ -76,6 +76,7 @@ async function cargarPanel() {
 }
 
 function generarAvatares(genero) {
+  // Limpiar siempre la grilla al abrir
   gridAvatares.innerHTML = '';
 
   const total = 10;
@@ -89,13 +90,14 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
-    // 🔥 SOLO LOCAL — SIN FETCH
+    // 🔥 CLICK 100% LOCAL
     img.addEventListener('click', () => {
       fotoPerfilEl.src = avatarNombre;
       localStorage.setItem('foto_perfil', avatarNombre);
       modalAvatares.style.display = 'none';
     });
 
+    // Añadir directamente sin esperar onload
     gridAvatares.appendChild(img);
   }
 }
@@ -206,3 +208,4 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
