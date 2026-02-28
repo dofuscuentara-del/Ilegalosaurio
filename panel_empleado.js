@@ -76,19 +76,6 @@ async function cargarPanel() {
   }
 }
 
-    // 🔥 FOTO 100% LOCAL
-    const fotoGuardada = localStorage.getItem('foto_perfil');
-    if (fotoGuardada) {
-      fotoPerfilEl.src = fotoGuardada;
-    } else {
-      fotoPerfilEl.src = 'm1.png'; // imagen por defecto
-    }
-
-  } catch (err) {
-    console.error(err);
-    alert('Error al cargar datos');
-  }
-}
 
 function generarAvatares(genero) {
   // Limpiar siempre la grilla al abrir
@@ -224,6 +211,7 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
 
