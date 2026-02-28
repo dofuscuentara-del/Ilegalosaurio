@@ -137,6 +137,7 @@ async function marcar(tipo) {
    EVENTOS
 ========================= */
 btnCambiarFoto.addEventListener('click', () => {
+  gridAvatares.innerHTML = '';   // 🔥 limpiar cualquier estado anterior
   modalAvatares.style.display = 'flex';
   generarAvatares(generoActivo);
 });
@@ -208,4 +209,5 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
