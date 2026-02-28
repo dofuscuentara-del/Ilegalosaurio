@@ -60,9 +60,14 @@ async function cargarPanel() {
     horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
     document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
 
-    // FOTO LOCAL — sin bloqueo
+    // 🔥 FOTO 100% LOCAL
     const fotoGuardada = localStorage.getItem('foto_perfil');
-    fotoPerfilEl.src = fotoGuardada || 'm1.png';
+    if (fotoGuardada) {
+      fotoPerfilEl.src = fotoGuardada;
+    } else {
+      fotoPerfilEl.src = 'm1.png'; // imagen por defecto
+    }
+
   } catch (err) {
     console.error(err);
     alert('Error al cargar datos');
@@ -72,7 +77,9 @@ async function cargarPanel() {
 function generarAvatares(genero) {
   gridAvatares.innerHTML = '';
 
-  for (let i = 1; i <= 10; i++) {
+  const total = 10;
+
+  for (let i = 1; i <= total; i++) {
     const img = document.createElement('img');
     const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
 
@@ -81,6 +88,7 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
+    // 🔥 SOLO LOCAL — SIN FETCH
     img.addEventListener('click', () => {
       fotoPerfilEl.src = avatarNombre;
       localStorage.setItem('foto_perfil', avatarNombre);
