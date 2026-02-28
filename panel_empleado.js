@@ -1,4 +1,3 @@
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const empleado_id = localStorage.getItem('empleado_id');
@@ -56,22 +55,52 @@ async function cargarPanel() {
       return;
     }
 
-    // 🔥 SOLO ACTUALIZAR ELEMENTOS NECESARIOS, NO TOCAR BOTONES
-    estadoEl.textContent = `Estado: ${data.estado.estado}`;
-    document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
-    horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
-
-    // 🔥 Renderizar historial sin tocar botones
+    renderEstado(data.estado.estado);
     renderHistorial(data.resumen?.dias || []);
+    horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
+    document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
 
-    // 🔥 FOTO LOCAL
+    // 🔥 FOTO 100% LOCAL
     const fotoGuardada = localStorage.getItem('foto_perfil');
-    fotoPerfilEl.src = fotoGuardada || 'm1.png';
+    if (fotoGuardada) {
+      fotoPerfilEl.src = fotoGuardada;
+    } else {
+      fotoPerfilEl.src = 'm1.png'; // imagen por defecto
+    }
 
   } catch (err) {
     console.error(err);
     alert('Error al cargar datos');
   }
+}
+
+function generarAvatares(genero) {
+  gridAvatares.innerHTML = '';
+
+  const total = 10;
+
+  for (let i = 1; i <= total; i++) {
+    const img = document.createElement('img');
+    const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
+
+    img.src = avatarNombre;
+    img.classList.add('avatar-item');
+    img.width = 80;
+    img.height = 80;
+
+    // 🔥 SOLO LOCAL — SIN FETCH
+    img.addEventListener('click', () => {
+      fotoPerfilEl.src = avatarNombre;
+      localStorage.setItem('foto_perfil', avatarNombre);
+      modalAvatares.style.display = 'none';
+    });
+
+    gridAvatares.appendChild(img);
+  }
+}
+
+function renderEstado(estado) {
+  estadoEl.textContent = `Estado: ${estado}`;
 }
 
 function renderHistorial(dias) {
@@ -81,25 +110,6 @@ function renderHistorial(dias) {
     li.innerHTML = `<span>${d.fecha}</span><span>${d.horas} h</span>`;
     listaDiasEl.appendChild(li);
   });
-}
-
-function generarAvatares(genero) {
-  gridAvatares.innerHTML = '';
-  const total = 10;
-  for (let i = 1; i <= total; i++) {
-    const img = document.createElement('img');
-    const avatarNombre = genero === 'masculino' ? `m${i}.png` : `f${i}.png`;
-    img.src = avatarNombre;
-    img.classList.add('avatar-item');
-    img.width = 80;
-    img.height = 80;
-    img.addEventListener('click', () => {
-      fotoPerfilEl.src = avatarNombre;
-      localStorage.setItem('foto_perfil', avatarNombre);
-      modalAvatares.style.display = 'none';
-    });
-    gridAvatares.appendChild(img);
-  }
 }
 
 async function marcar(tipo) {
@@ -113,7 +123,7 @@ async function marcar(tipo) {
       return;
     }
 
-    cargarPanel(); // refrescar info, pero botones no se afectan
+    cargarPanel();
   } catch (err) {
     console.error(err);
     alert('Error de conexión');
@@ -127,7 +137,10 @@ btnCambiarFoto.addEventListener('click', () => {
   modalAvatares.style.display = 'flex';
   generarAvatares(generoActivo);
 });
-btnCerrarAvatar.addEventListener('click', () => modalAvatares.style.display = 'none');
+
+btnCerrarAvatar.addEventListener('click', () => {
+  modalAvatares.style.display = 'none';
+});
 
 tabMasculino.addEventListener('click', () => {
   generoActivo = 'masculino';
@@ -151,7 +164,9 @@ btnCalculadora.addEventListener('click', () => {
   modalCalc.style.display = 'flex';
 });
 
-btnCerrarCalc.addEventListener('click', () => modalCalc.style.display = 'none');
+btnCerrarCalc.addEventListener('click', () => {
+  modalCalc.style.display = 'none';
+});
 
 btnCalcular.addEventListener('click', async () => {
   const desde = fechaInicioEl.value;
@@ -173,7 +188,8 @@ btnCalcular.addEventListener('click', async () => {
       return;
     }
 
-    resultadoCalcEl.textContent = `Horas: ${data.total_horas} | Total: $${(data.total_horas * sueldo).toFixed(2)}`;
+    const total = data.total_horas * sueldo;
+    resultadoCalcEl.textContent = `Horas: ${data.total_horas} | Total: $${total.toFixed(2)}`;
   } catch (err) {
     console.error(err);
     alert('Error en calculadora');
@@ -188,4 +204,4 @@ btnSalir.addEventListener('click', () => {
 /* =========================
    INICIO
 ========================= */
-cargarPanel(); // 🔥 los botones ya funcionan antes y después de cargar
+cargarPanel();
