@@ -49,7 +49,8 @@ let generoActivo = 'masculino';
 async function cargarPanel() {
   try {
 
-    loadingOverlay.style.display = 'flex'; // mostrar loader
+    loadingOverlay.style.display = 'flex';
+    loadingOverlay.style.pointerEvents = 'all';
 
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
     const res = await fetch(url);
@@ -72,7 +73,12 @@ async function cargarPanel() {
     console.error(err);
     alert('Error al cargar datos');
   } finally {
-    loadingOverlay.style.display = 'none'; // 🔥 ESTA ES LA CLAVE
+
+    // 🔥 ESTA ES LA DIFERENCIA REAL
+    loadingOverlay.style.display = 'none';
+    loadingOverlay.style.pointerEvents = 'none';
+    loadingOverlay.remove(); // 💣 lo eliminamos del DOM completamente
+
   }
 }
 
@@ -211,6 +217,7 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
 
