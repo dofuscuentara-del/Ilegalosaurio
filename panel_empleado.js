@@ -1,3 +1,4 @@
+
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const empleado_id = localStorage.getItem('empleado_id');
@@ -11,32 +12,16 @@ if (!empleado_id) {
 const estadoEl = document.getElementById('estadoActual');
 const horasHoyEl = document.getElementById('horasHoy');
 const listaDiasEl = document.getElementById('listaDias');
-
-const btnEntrada = document.getElementById('btnEntrada');
-const btnSalida = document.getElementById('btnSalida');
-const btnCalculadora = document.getElementById('btnCalculadora');
-const btnSalir = document.getElementById('btnSalir');
-
-/* ===== FOTO PERFIL ===== */
 const fotoPerfilEl = document.getElementById('fotoPerfil');
-const btnCambiarFoto = document.getElementById('btnCambiarFoto');
 
-/* ===== MODAL CALCULADORA ===== */
 const modalCalc = document.getElementById('modalCalculadora');
 const fechaInicioEl = document.getElementById('fechaInicio');
 const fechaFinEl = document.getElementById('fechaFin');
 const sueldoHoraEl = document.getElementById('sueldoHora');
 const resultadoCalcEl = document.getElementById('resultadoCalc');
 
-const btnCalcular = document.getElementById('btnCalcular');
-const btnCerrarCalc = document.getElementById('btnCerrarCalc');
-
-/* =========================
-   MODAL AVATARES
-========================= */
 const modalAvatares = document.getElementById('modalAvatares');
 const gridAvatares = document.getElementById('gridAvatares');
-const btnCerrarAvatar = document.getElementById('btnCerrarAvatar');
 const tabMasculino = document.getElementById('tabMasculino');
 const tabFemenino = document.getElementById('tabFemenino');
 let generoActivo = 'masculino';
@@ -60,13 +45,8 @@ async function cargarPanel() {
     horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
     document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
 
-    // 🔥 FOTO 100% LOCAL
     const fotoGuardada = localStorage.getItem('foto_perfil');
-    if (fotoGuardada) {
-      fotoPerfilEl.src = fotoGuardada;
-    } else {
-      fotoPerfilEl.src = 'm1.png'; // imagen por defecto
-    }
+    fotoPerfilEl.src = fotoGuardada || 'm1.png';
 
   } catch (err) {
     console.error(err);
@@ -76,7 +56,6 @@ async function cargarPanel() {
 
 function generarAvatares(genero) {
   gridAvatares.innerHTML = '';
-
   const total = 10;
 
   for (let i = 1; i <= total; i++) {
@@ -88,7 +67,6 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
-    // 🔥 SOLO LOCAL — SIN FETCH
     img.addEventListener('click', () => {
       fotoPerfilEl.src = avatarNombre;
       localStorage.setItem('foto_perfil', avatarNombre);
@@ -131,44 +109,62 @@ async function marcar(tipo) {
 }
 
 /* =========================
-   EVENTOS
+   EVENTOS — EVENT DELEGATION
 ========================= */
-btnCambiarFoto.addEventListener('click', () => {
-  modalAvatares.style.display = 'flex';
-  generarAvatares(generoActivo);
+document.body.addEventListener('click', (e) => {
+  switch (e.target.id) {
+    case 'btnCambiarFoto':
+      modalAvatares.style.display = 'flex';
+      generarAvatares(generoActivo);
+      break;
+
+    case 'btnCalculadora':
+      resultadoCalcEl.textContent = 'Horas: 0 | Total: $0';
+      modalCalc.style.display = 'flex';
+      break;
+
+    case 'btnCerrarAvatar':
+      modalAvatares.style.display = 'none';
+      break;
+
+    case 'btnCerrarCalc':
+      modalCalc.style.display = 'none';
+      break;
+
+    case 'btnEntrada':
+      marcar('entrada');
+      break;
+
+    case 'btnSalida':
+      marcar('salida');
+      break;
+
+    case 'btnSalir':
+      localStorage.clear();
+      window.location.href = 'index.html';
+      break;
+
+    case 'tabMasculino':
+      generoActivo = 'masculino';
+      tabMasculino.classList.add('tab-activa');
+      tabFemenino.classList.remove('tab-activa');
+      generarAvatares('masculino');
+      break;
+
+    case 'tabFemenino':
+      generoActivo = 'femenino';
+      tabFemenino.classList.add('tab-activa');
+      tabMasculino.classList.remove('tab-activa');
+      generarAvatares('femenino');
+      break;
+
+    case 'btnCalcular':
+      calcularRango();
+      break;
+  }
 });
 
-btnCerrarAvatar.addEventListener('click', () => {
-  modalAvatares.style.display = 'none';
-});
-
-tabMasculino.addEventListener('click', () => {
-  generoActivo = 'masculino';
-  tabMasculino.classList.add('tab-activa');
-  tabFemenino.classList.remove('tab-activa');
-  generarAvatares('masculino');
-});
-
-tabFemenino.addEventListener('click', () => {
-  generoActivo = 'femenino';
-  tabFemenino.classList.add('tab-activa');
-  tabMasculino.classList.remove('tab-activa');
-  generarAvatares('femenino');
-});
-
-btnEntrada.addEventListener('click', () => marcar('entrada'));
-btnSalida.addEventListener('click', () => marcar('salida'));
-
-btnCalculadora.addEventListener('click', () => {
-  resultadoCalcEl.textContent = 'Horas: 0 | Total: $0';
-  modalCalc.style.display = 'flex';
-});
-
-btnCerrarCalc.addEventListener('click', () => {
-  modalCalc.style.display = 'none';
-});
-
-btnCalcular.addEventListener('click', async () => {
+async function calcularRango() {
   const desde = fechaInicioEl.value;
   const hasta = fechaFinEl.value;
   const sueldo = parseFloat(sueldoHoraEl.value);
@@ -194,12 +190,7 @@ btnCalcular.addEventListener('click', async () => {
     console.error(err);
     alert('Error en calculadora');
   }
-});
-
-btnSalir.addEventListener('click', () => {
-  localStorage.clear();
-  window.location.href = 'index.html';
-});
+}
 
 /* =========================
    INICIO
