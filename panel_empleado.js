@@ -9,6 +9,7 @@ if (!empleado_id) {
 /* =========================
    ELEMENTOS
 ========================= */
+const loadingOverlay = document.getElementById('loading-overlay');
 const estadoEl = document.getElementById('estadoActual');
 const horasHoyEl = document.getElementById('horasHoy');
 const listaDiasEl = document.getElementById('listaDias');
@@ -47,6 +48,9 @@ let generoActivo = 'masculino';
 ========================= */
 async function cargarPanel() {
   try {
+
+    loadingOverlay.style.display = 'flex'; // mostrar loader
+
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
     const res = await fetch(url);
     const data = await res.json();
@@ -60,6 +64,17 @@ async function cargarPanel() {
     renderHistorial(data.resumen?.dias || []);
     horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
     document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
+
+    const fotoGuardada = localStorage.getItem('foto_perfil');
+    fotoPerfilEl.src = fotoGuardada || 'm1.png';
+
+  } catch (err) {
+    console.error(err);
+    alert('Error al cargar datos');
+  } finally {
+    loadingOverlay.style.display = 'none'; // 🔥 ESTA ES LA CLAVE
+  }
+}
 
     // 🔥 FOTO 100% LOCAL
     const fotoGuardada = localStorage.getItem('foto_perfil');
@@ -209,5 +224,6 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
