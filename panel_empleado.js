@@ -47,10 +47,14 @@ let generoActivo = 'masculino';
    FUNCIONES
 ========================= */
 async function cargarPanel() {
-  try {
 
+  // 🔥 NO recargar si el modal está abierto
+  if (modalAvatares.style.display === 'flex') {
+    return;
+  }
+
+  try {
     loadingOverlay.style.display = 'flex';
-    loadingOverlay.style.pointerEvents = 'all';
 
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
     const res = await fetch(url);
@@ -71,17 +75,10 @@ async function cargarPanel() {
 
   } catch (err) {
     console.error(err);
-    alert('Error al cargar datos');
   } finally {
-
-    // 🔥 ESTA ES LA DIFERENCIA REAL
     loadingOverlay.style.display = 'none';
-    loadingOverlay.style.pointerEvents = 'none';
-    loadingOverlay.remove(); // 💣 lo eliminamos del DOM completamente
-
   }
 }
-
 
 function generarAvatares(genero) {
   // Limpiar siempre la grilla al abrir
@@ -217,6 +214,7 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
 
