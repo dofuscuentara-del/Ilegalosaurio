@@ -133,9 +133,11 @@ async function marcar(tipo) {
 /* =========================
    EVENTOS
 ========================= */
+
+// FOTO PERFIL
 btnCambiarFoto.addEventListener('click', () => {
   modalAvatares.style.display = 'flex';
-  generarAvatares(generoActivo);
+  generarAvatares(generoActivo); // Genera avatares directamente, sin fetch ni espera
 });
 
 btnCerrarAvatar.addEventListener('click', () => {
@@ -146,22 +148,24 @@ tabMasculino.addEventListener('click', () => {
   generoActivo = 'masculino';
   tabMasculino.classList.add('tab-activa');
   tabFemenino.classList.remove('tab-activa');
-  generarAvatares('masculino');
+  generarAvatares('masculino'); // Cambio inmediato
 });
 
 tabFemenino.addEventListener('click', () => {
   generoActivo = 'femenino';
   tabFemenino.classList.add('tab-activa');
   tabMasculino.classList.remove('tab-activa');
-  generarAvatares('femenino');
+  generarAvatares('femenino'); // Cambio inmediato
 });
 
+// MARCAR ENTRADA/SALIDA (fetch sigue)
 btnEntrada.addEventListener('click', () => marcar('entrada'));
 btnSalida.addEventListener('click', () => marcar('salida'));
 
+// CALCULADORA
 btnCalculadora.addEventListener('click', () => {
   resultadoCalcEl.textContent = 'Horas: 0 | Total: $0';
-  modalCalc.style.display = 'flex';
+  modalCalc.style.display = 'flex'; // abrir inmediatamente
 });
 
 btnCerrarCalc.addEventListener('click', () => {
@@ -178,6 +182,7 @@ btnCalcular.addEventListener('click', async () => {
     return;
   }
 
+  // Aquí sigue la llamada al API, pero el modal ya está abierto
   try {
     const url = `${API_URL}?action=resumenRango&empleado_id=${encodeURIComponent(empleado_id)}&desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`;
     const res = await fetch(url);
@@ -196,6 +201,7 @@ btnCalcular.addEventListener('click', async () => {
   }
 });
 
+// SALIR
 btnSalir.addEventListener('click', () => {
   localStorage.clear();
   window.location.href = 'index.html';
@@ -205,3 +211,4 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
