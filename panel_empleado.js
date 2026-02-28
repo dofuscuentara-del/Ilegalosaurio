@@ -1,4 +1,3 @@
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbzFBswLY6YJeEAlrH1DoKde2ZeplXQjfvpgS3koq9BJs1y0htljmGiFTv8zWCPCEbS3/exec';
 
 const empleado_id = localStorage.getItem('empleado_id');
@@ -9,7 +8,6 @@ if (!empleado_id) {
 /* =========================
    ELEMENTOS
 ========================= */
-const loadingOverlay = document.getElementById('loading-overlay');
 const estadoEl = document.getElementById('estadoActual');
 const horasHoyEl = document.getElementById('horasHoy');
 const listaDiasEl = document.getElementById('listaDias');
@@ -47,17 +45,7 @@ let generoActivo = 'masculino';
    FUNCIONES
 ========================= */
 async function cargarPanel() {
-
-  // 🔥 NO recargar si el modal está abierto
-  if (modalAvatares.style.display === 'flex') {
-    return;
-  }
-
   try {
-   if (loadingOverlay) {
-  loadingOverlay.style.display = 'flex';
-}
-
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
     const res = await fetch(url);
     const data = await res.json();
@@ -72,19 +60,21 @@ async function cargarPanel() {
     horasHoyEl.textContent = `Horas últimos 15 días: ${data.resumen?.total_horas || 0}`;
     document.getElementById('nombreEmpleado').textContent = data.estado.nombre || 'Empleado';
 
+    // 🔥 FOTO 100% LOCAL
     const fotoGuardada = localStorage.getItem('foto_perfil');
-    fotoPerfilEl.src = fotoGuardada || 'm1.png';
+    if (fotoGuardada) {
+      fotoPerfilEl.src = fotoGuardada;
+    } else {
+      fotoPerfilEl.src = 'm1.png'; // imagen por defecto
+    }
 
   } catch (err) {
     console.error(err);
-  } finally {
-  if (loadingOverlay) {
-    loadingOverlay.style.display = 'none';
+    alert('Error al cargar datos');
   }
 }
 
 function generarAvatares(genero) {
-  // Limpiar siempre la grilla al abrir
   gridAvatares.innerHTML = '';
 
   const total = 10;
@@ -98,14 +88,13 @@ function generarAvatares(genero) {
     img.width = 80;
     img.height = 80;
 
-    // 🔥 CLICK 100% LOCAL
+    // 🔥 SOLO LOCAL — SIN FETCH
     img.addEventListener('click', () => {
       fotoPerfilEl.src = avatarNombre;
       localStorage.setItem('foto_perfil', avatarNombre);
       modalAvatares.style.display = 'none';
     });
 
-    // Añadir directamente sin esperar onload
     gridAvatares.appendChild(img);
   }
 }
@@ -145,7 +134,6 @@ async function marcar(tipo) {
    EVENTOS
 ========================= */
 btnCambiarFoto.addEventListener('click', () => {
-  gridAvatares.innerHTML = '';   // 🔥 limpiar cualquier estado anterior
   modalAvatares.style.display = 'flex';
   generarAvatares(generoActivo);
 });
@@ -217,10 +205,3 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
-
-
-
-
-
-
-
