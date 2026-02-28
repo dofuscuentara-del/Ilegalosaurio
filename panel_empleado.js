@@ -54,7 +54,9 @@ async function cargarPanel() {
   }
 
   try {
-    loadingOverlay.style.display = 'flex';
+   if (loadingOverlay) {
+  loadingOverlay.style.display = 'flex';
+}
 
     const url = `${API_URL}?action=panelEmpleado&empleado_id=${encodeURIComponent(empleado_id)}`;
     const res = await fetch(url);
@@ -76,6 +78,7 @@ async function cargarPanel() {
   } catch (err) {
     console.error(err);
   } finally {
+  if (loadingOverlay) {
     loadingOverlay.style.display = 'none';
   }
 }
@@ -214,6 +217,7 @@ btnSalir.addEventListener('click', () => {
    INICIO
 ========================= */
 cargarPanel();
+
 
 
 
